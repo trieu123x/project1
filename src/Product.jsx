@@ -6,7 +6,6 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react
 function Product({ products, onAddProduct }) {
   const { id } = useParams();
   const [prod, setProd] = useState(null);
-  const [showTT, setShowTT] = useState(false);
   const navigate = useNavigate();
   const add = () => {
     onAddProduct(prod);
@@ -53,7 +52,10 @@ function Product({ products, onAddProduct }) {
                 Thêm vào giỏ hàng
               </button>
               <button
-                onClick={() => navigate("/thanhtoan")}
+                onClick={() => {
+                  localStorage.setItem("product", JSON.stringify(prod));
+                  navigate("/thanhtoan")
+                }}
                 className=" cursor-pointer bg-emerald-500 px-4 py-2 font-semibold hover:bg-emerald-600 transition-colors duration-300"
               >
                 Mua ngay

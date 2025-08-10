@@ -28,12 +28,15 @@ export default function Giohang({ products, show }) {
             right-4`}
         >
           <ul>
-            <h1 className="text-2xl font-bold text-center">Giỏ hàng</h1>
+            <h1 className=" mt-2 text-2xl font-bold text-center">Giỏ hàng</h1>
             {products.map((product, index) => (
               <li key={index} className="p-4 border-b border-gray-200">
                 <div className="flex space-x-2 justify-between items-center">
                   <img className=" object-contain w-16 h-16" src={product.image} alt="" />
-                  <span>{product.title}</span>
+                  <div>
+                    <h2 className=" w-[250px] text-lg font-semibold">{product.title}</h2>
+                    
+                  </div>
                   <span>{product.price}$</span>
                 </div>
               </li>

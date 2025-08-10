@@ -9,21 +9,14 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-function Danhmucsp() {
+function Danhmucsp({products}) {
   const [quanaonam, setQuanaonam] = useState(true);
   const [quanaonu, setQuanaonu] = useState(true);
   const [dienmay, setDienmay] = useState(true);
   const [trangsuc, setTrangSuc] = useState(true);
-  const [products, setProducts] = useState([]);
+  
   const navigate = useNavigate();
-  useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
-      .then((response) => response.json())
-      .then((data) => {
-        setProducts(data);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+  
 
   return (
     <>
