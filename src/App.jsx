@@ -13,6 +13,8 @@ import {
 import Thanhtoan from "./Thanhtoan";
 import Thetindung from "./PTThanhtoan/Thetindung";
 import PayPal from "./PTThanhtoan/Paypal";
+import Nhanhang from "./PTThanhtoan/Nhanhang";
+import Xacnhan from "./XacNhan";
 
 function App() {
   const [show, setShow] = useState(false);
@@ -22,14 +24,13 @@ function App() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
-  console.log("render");
+
 
   useEffect(() => {
     fetch("https://fakestoreapi.com/products")
       .then((response) => response.json())
       .then((data) => {
         setItems(data);
-        console.log(items);
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
@@ -138,6 +139,8 @@ function App() {
         <Route path="/thanhtoan" element={<Thanhtoan />} />
         <Route path="/ptthanhtoan/thetindung" element={<Thetindung />} />
         <Route path="/ptthanhtoan/paypal" element={<PayPal />} />
+        <Route path="/ptthanhtoan/nhanhang" element={<Nhanhang></Nhanhang>}></Route>
+        <Route path="/xacnhan" element={<Xacnhan></Xacnhan>}></Route>
       </Routes>
 
       {showGiohang && (

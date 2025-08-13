@@ -22,7 +22,7 @@ function Product({ products, onAddProduct }) {
   return (
     <div>
       {prod && (
-        <><div className=" rounded-md drop-shadow-2xl border border-gray-300 space-x-4 mx-auto mt-12 flex w-[1000px] h-[500px]">
+        <><div className=" rounded-md drop-shadow-2xl border border-gray-300 space-x-4 mx-auto mt-12 flex w-[1000px] min-h-[500px]">
           <img
             className=" object-contain min-w-[400px] rounded-l-md bg-gray-400"
             src={prod.image}
@@ -60,7 +60,16 @@ function Product({ products, onAddProduct }) {
               >
                 Mua ngay
               </button>
-           </div>
+            </div>
+            <button
+          onClick={() => {
+           
+            navigate(-1);
+          }}
+          className=" absolute bottom-4 right-4  bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-4 py-2 rounded-md"
+        >
+          Quay lại
+        </button>
           </div>
         </div>
           

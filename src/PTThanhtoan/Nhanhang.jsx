@@ -10,11 +10,7 @@ import {
 
 export default function PayPal() {
   const navigate = useNavigate();
-  const [formDataP, setformDataP] = useState({
-    cardNumber: "",
-    cardName: "",
-    expiry: "",
-    cvv: "",
+  const [formDataN, setformDataN] = useState({
     city: "",
     district: "",
     ward: "",
@@ -24,22 +20,22 @@ export default function PayPal() {
   const [remember, setRemember] = useState(false);
   const [product, setProduct] = useState(null);
   useEffect(() => {
-    const storedData = localStorage.getItem("formDataP");
+    const storedData = localStorage.getItem("formDataN");
     if (storedData) {
-      setformDataP(JSON.parse(storedData));
+      setformDataN(JSON.parse(storedData));
       setRemember(true);
     }
   }, []);
   const handleChange = (e) => { 
-    setformDataP({
-      ...formDataP,[e.target.name]: e.target.value})
+    setformDataN({
+      ...formDataN,[e.target.name]: e.target.value})
   }
   const handleSubmit = (e) => { 
     if (remember) {
-      localStorage.setItem("formDataP", JSON.stringify(formDataP));
+      localStorage.setItem("formDataN", JSON.stringify(formDataN));
     }
     else {
-      localStorage.removeItem("formDataP");
+      localStorage.removeItem("formDataN");
     }
   }
   useEffect(() => {
@@ -54,73 +50,37 @@ export default function PayPal() {
             className="text-4xl fa-solid fa-credit-card mr-2"
             aria-hidden="true"
           ></i>{" "}
-          Thanh toán bằng thẻ PayPal
+          Thanh toán khi nhận hàng
         </p>
         <div className=" flex flex-wrap w-full justify-between space-x-8 p-6">
-          <div className="w-[360px]">
-            <p className="text-lg font-semibold">Thông tin thẻ PayPal </p>
-            <form className="space-y-4">
-              <input
-                name="cardNumber"
-                value={formDataP.cardNumber}
-                onChange={handleChange}
-                type="number"
-                placeholder="Số thẻ"
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-              <input
-                name="cardName"
-                value={formDataP.cardName}
-                onChange={handleChange}
-                type="text"
-                placeholder="Họ và tên chủ thẻ"
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-              <input
-                name="expiry"
-                value={formDataP.expiry}
-                onChange={handleChange}
-                type="date"
-                placeholder="Ngày hết hạn (MM/YY)"
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-              <input
-                name="cvv"
-                value={formDataP.cvv}
-                onChange={handleChange}
-                type="number"
-                placeholder="Mã CVV"
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-            </form>
-          </div>
-          <div className="w-[360px]">
+          
+          <div className="">
             <p className="text-lg font-semibold">Địa chỉ</p>
             <form className="space-y-4">
               <input
                 name="city"
-                value={formDataP.city} onChange={handleChange}
+                value={formDataN.city} onChange={handleChange}
                 type="text"
                 placeholder="Thành phố"
                 className="w-full p-2 border border-gray-300 rounded-md"
               />
               <input
                 name="district"
-                value={formDataP.district} onChange={handleChange}
+                value={formDataN.district} onChange={handleChange}
                 type="text"
                 placeholder="Quân/huyện"
                 className="w-full p-2 border border-gray-300 rounded-md"
               />
               <input
                 name="ward"
-                value={formDataP.ward} onChange={handleChange}
+                value={formDataN.ward} onChange={handleChange}
                 type="text"
                 placeholder="Xa/phường"
                 className="w-full p-2 border border-gray-300 rounded-md"
               />
               <input
                 name="address"
-                value={formDataP.address} onChange={handleChange}
+                value={formDataN.address} onChange={handleChange}
                 type="text"
                 placeholder="Địa chỉ chi tiết"
                 className="w-full p-2 border border-gray-300 rounded-md"
@@ -132,7 +92,7 @@ export default function PayPal() {
           <p className="text-lg font-semibold">Số Điện Thoại</p>
           <input
             name="phone"
-            value={formDataP.phone} onChange={handleChange}
+            value={formDataN.phone} onChange={handleChange}
             type="num
                 ber"
             placeholder="Số Điện Thoại"
@@ -162,7 +122,7 @@ export default function PayPal() {
           <button onClick={
             () => {
               
-              handleSubmit();navigate("/xacnhan",{ state: {product } });
+              handleSubmit();navigate("/xacnhan",{ state: { product } });
             }
           } className="  bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-4 py-2 rounded-md">
             Tiếp tục

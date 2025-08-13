@@ -27,14 +27,14 @@ export default function Thanhtoan() {
                 ></i>
                 Thanh toán bằng thẻ tín dụng
               </li>
-              <li className="text-xl flex items-center cursor-pointer hover:bg-gray-300 p-2 rounded-md">
+              <li onClick={()=>navigate("/ptthanhtoan/paypal")} className="text-xl flex items-center cursor-pointer hover:bg-gray-300 p-2 rounded-md">
                 <i
                   className=" text-4xl fa-brands fa-cc-paypal mr-2"
                   aria-hidden="true"
                 ></i>
                 Thanh toán qua PayPal
               </li>
-              <li className=" text-xl flex items-center cursor-pointer hover:bg-gray-300 p-2 rounded-md">
+              <li onClick={()=> navigate("/ptthanhtoan/nhanhang")} className=" text-xl flex items-center cursor-pointer hover:bg-gray-300 p-2 rounded-md">
                 <i
                   className="text-4xl fa-solid fa-money-bill mr-2"
                   aria-hidden="true"
