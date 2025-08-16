@@ -19,6 +19,10 @@ export default function PayPal() {
   });
   const [remember, setRemember] = useState(false);
   const [product, setProduct] = useState(null);
+  const [cart, setCart] = useState([]);
+  const [emes, setEmes] = useState(false);
+  const [show, setShow] = useState(false);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
     const storedData = localStorage.getItem("formDataN");
     if (storedData) {
@@ -39,96 +43,178 @@ export default function PayPal() {
     }
   }
   useEffect(() => {
+  if (emes) {
+    setShow(true);     
+    setTimeout(() => setVisible(true), 50); 
+  } else {
+    setVisible(false); 
+    setTimeout(() => setShow(false), 500); 
+  }
+}, [emes]);
+  useEffect(() => {
     const stored = localStorage.getItem("product");
     if (stored) setProduct(JSON.parse(stored));
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) setCart(JSON.parse(storedCart));
   }, []);
   return (
     <>
-      <div className=" shadow-2xl mt-12 border-1 border-gray-300 bg-white mx-auto top-[72px]  w-1/2 min-h-[600px]">
-        <p className=" ml-2 mr-2 text-2xl font-semibold p-6  border-b-2 border-gray-400">
-          <i
-            className="text-4xl fa-solid fa-credit-card mr-2"
-            aria-hidden="true"
-          ></i>{" "}
-          Thanh toán khi nhận hàng
-        </p>
-        <div className=" flex flex-wrap w-full justify-between space-x-8 p-6">
-          
-          <div className="">
-            <p className="text-lg font-semibold">Địa chỉ</p>
-            <form className="space-y-4">
-              <input
-                name="city"
-                value={formDataN.city} onChange={handleChange}
-                type="text"
-                placeholder="Thành phố"
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-              <input
-                name="district"
-                value={formDataN.district} onChange={handleChange}
-                type="text"
-                placeholder="Quân/huyện"
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-              <input
-                name="ward"
-                value={formDataN.ward} onChange={handleChange}
-                type="text"
-                placeholder="Xa/phường"
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-              <input
-                name="address"
-                value={formDataN.address} onChange={handleChange}
-                type="text"
-                placeholder="Địa chỉ chi tiết"
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-            </form>
-          </div>
+      <div className="max-w-3xl mx-auto mt-12 p-6 bg-white shadow-2xl rounded-xl border border-gray-200">
+  <p className="text-2xl font-semibold mb-6 flex items-center border-b pb-3">
+    <i className="text-4xl fa-solid fa-credit-card mr-3 text-emerald-500"></i>
+    Thanh toán khi nhận hàng
+  </p>
+        {show && (
+          <div
+  className={` fixed top-12 left-1/2 -translate-1/2 bg-red-100 text-red-700 p-4 rounded-md transition-all duration-500 
+    ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3 pointer-events-none"}
+  `}
+>
+  <p>Bạn cần điền đầy đủ thông tin trước khi tiếp tục</p>
+</div>
+    )}
+
+  <div className="mb-6">
+    <p className="text-lg font-semibold mb-4">Địa chỉ</p>
+    <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input
+        name="city"
+        value={formDataN.city}
+        onChange={handleChange}
+        type="text"
+        placeholder="Thành phố"
+        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      />
+      <input
+        name="district"
+        value={formDataN.district}
+        onChange={handleChange}
+        type="text"
+        placeholder="Quận/Huyện"
+        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      />
+      <input
+        name="ward"
+        value={formDataN.ward}
+        onChange={handleChange}
+        type="text"
+        placeholder="Xã/Phường"
+        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      />
+      <input
+        name="address"
+        value={formDataN.address}
+        onChange={handleChange}
+        type="text"
+        placeholder="Địa chỉ chi tiết"
+        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400 col-span-1 md:col-span-2"
+      />
+    </form>
+  </div>
+
+  <div className="mb-6">
+    <p className="text-lg font-semibold mb-2">Số điện thoại</p>
+    <input
+      name="phone"
+      value={formDataN.phone}
+      onChange={handleChange}
+      type="number"
+      placeholder="Số điện thoại"
+      className="w-full md:w-1/2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
+    />
+  </div>
+
+
+  <div className="mb-8 flex items-center space-x-2">
+    <input
+      type="checkbox"
+      checked={remember}
+      onChange={(e) => setRemember(e.target.checked)}
+      className="w-4 h-4"
+    />
+    <span className="text-gray-700">Lưu thông tin cho lần sau</span>
         </div>
-        <div className="p-6 w-1/3">
-          <p className="text-lg font-semibold">Số Điện Thoại</p>
-          <input
-            name="phone"
-            value={formDataN.phone} onChange={handleChange}
-            type="num
-                ber"
-            placeholder="Số Điện Thoại"
-            className="w-full p-2 border border-gray-300 rounded-md"
+        <div className="mt-8">
+    <p className="text-lg font-semibold mb-4 border-b pb-2">Thông tin sản phẩm</p>
+    {product && (
+      <div className="flex mb-4 flex-col md:flex-row items-center md:items-start bg-gray-50 shadow-sm rounded-xl p-4 gap-6">
+        <div className="flex-shrink-0">
+          <img
+            className="w-[180px] h-[180px] object-contain rounded-lg border border-gray-200 bg-white p-2"
+            src={product.image}
+            alt={product.title}
           />
         </div>
-         <div className="p-6">
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            checked={remember}
-            onChange={(e) => setRemember(e.target.checked)}
-          />
-          <span>Lưu thông tin cho lần sau</span>
-        </label>
+        <div className="flex flex-col justify-between text-center md:text-left gap-2">
+          <p className="text-lg font-bold text-gray-800">{product.title}</p>
+          <p className="text-xl font-bold text-red-500">{product.price} $</p>
+        </div>
       </div>
-        <div className="flex  justify-around p-6">
-          <button
+          )}
+          {cart && cart.length > 0 && product == null && (
+            cart.map((item) => (
+            
+                <div key={item.id} className="flex mb-4 flex-col md:flex-row items-center md:items-start bg-gray-50 shadow-sm rounded-xl p-4 gap-6">
+                  <div className="flex-shrink-0">
+                    <img
+                      className="w-[180px] h-[180px] object-contain rounded-lg border border-gray-200 bg-white p-2"
+                      src={item.image}
+                      alt={item.title}
+                    />
+                  </div>
+                  <div className="flex flex-col justify-between text-center md:text-left gap-2">
+                    <p className="text-lg font-bold text-gray-800">{item.title}</p>
+                    <p className="text-xl font-bold text-red-500">{item.price} $</p>
+                  </div>
+                </div>
+             
+            ))
+          )}
+  </div>
+
+ 
+  <div className="flex flex-col md:flex-row justify-end gap-4">
+    <button
+      onClick={() => {
+        handleSubmit();
+        navigate(-1);
+      }}
+      className="bg-gray-200 hover:bg-gray-300 transition-colors duration-300 text-gray-700 font-semibold px-6 py-2 rounded-md"
+    >
+      Quay lại
+    </button>
+    <button
             onClick={() => {
-              handleSubmit();
-              navigate(-1);
+  {
+    if (!formDataN.city || !formDataN.district || !formDataN.ward || !formDataN.address || !formDataN.phone) {
+      setEmes(true);
+      setTimeout(() => {
+        setEmes(false);
+      }, 2000);
+      return;
+    }
+  }
+  handleSubmit();
+  navigate("/xacnhan");
+  localStorage.removeItem("product");
+  {
+    if (cart && cart.length > 0 && product == null) {
+      localStorage.removeItem("cart", JSON.stringify(cart));
+    }
+              }
+              setTimeout(() => {
+      window.location.reload(); // reload sau khi navigate
+    }, 100);
             }}
-            className=" bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-4 py-2 rounded-md"
-          >
-            Quay lại
-          </button>
-          <button onClick={
-            () => {
-              
-              handleSubmit();navigate("/xacnhan",{ state: { product } });
-            }
-          } className="  bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-4 py-2 rounded-md">
-            Tiếp tục
-          </button>
-        </div>
-      </div>
+            
+
+      className="bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-6 py-2 rounded-md"
+    >
+      Tiếp tục
+    </button>
+  </div>
+</div>
+
     </>
   );
 }

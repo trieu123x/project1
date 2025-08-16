@@ -7,6 +7,7 @@ function Product({ products, onAddProduct }) {
   const { id } = useParams();
   const [prod, setProd] = useState(null);
   const navigate = useNavigate();
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const add = () => {
     onAddProduct(prod);
   };
@@ -18,60 +19,87 @@ function Product({ products, onAddProduct }) {
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+  
 
+useEffect(() => {
+  if (prod?.category) {
+    fetch(`https://fakestoreapi.com/products/category/${prod.category}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const filtered = data.filter((item) => item.id !== prod.id);
+        setRelatedProducts(filtered);
+      })
+      .catch((err) => console.error(err));
+  }
+}, [prod]);
   return (
     <div>
       {prod && (
-        <><div className=" rounded-md drop-shadow-2xl border border-gray-300 space-x-4 mx-auto mt-12 flex w-[1000px] min-h-[500px]">
-          <img
-            className=" object-contain min-w-[400px] rounded-l-md bg-gray-400"
-            src={prod.image}
-            alt=""
-          />
-          <div className=" mt-4 flex flex-col space-y-4">
-            <p className="text-4xl">{prod.title}</p>
-            <div className=" pl-1.5 pr-1.5 flex w-[200px] flex-row space-x-2">
-              <p className="pl-1 pr-1 text-sm rounded-sm border border-amber-400 bg-amber-200">
-                {prod.rating.rate}{" "}
-                <i className="text-amber-500 fa-solid fa-star"></i>
-              </p>
-              <p>Đã bán {prod.rating.count}</p>
-            </div>
-            <p>Mô tả: {prod.description}</p>
-            <div className="mr-4 bg-gray-300 p-4 flex space-x-4 items-center">
-              <p className="text-2xl font-semibold" >Giá chỉ:</p>
-              <p className="text-2xl font-semibold text-red-600">
-                {prod.price}$
-              </p>
-            </div>
-            <div className="flex space-x-4 mt-4">
-              <button
-                onClick={add}
-                className="cursor-pointer bg-emerald-200 border-2 font-semibold border-emerald-600 px-4 py-2  hover:bg-emerald-600 transition-colors duration-300"
-              >
-                Thêm vào giỏ hàng
-              </button>
-              <button
+        <><div className="max-w-6xl mx-auto mt-12 rounded-lg overflow-hidden shadow-2xl border border-gray-200 bg-white flex flex-col md:flex-row">
+ 
+  <div className="bg-gray-100 flex justify-center items-center p-4 md:min-w-[400px]">
+    <img
+      className="object-contain w-full max-w-[400px] h-auto rounded-md"
+      src={prod.image}
+      alt={prod.title}
+    />
+  </div>
+
+
+  <div className="flex flex-col justify-between p-6 space-y-6 flex-1">
+
+    <p className="text-3xl font-bold text-gray-800">{prod.title}</p>
+
+ 
+    <div className="flex items-center space-x-4">
+      <p className="px-2 py-1 text-sm rounded-sm border border-amber-400 bg-amber-100 flex items-center">
+        {prod.rating.rate}{" "}
+        <i className="text-amber-500 fa-solid fa-star ml-1"></i>
+      </p>
+      <p className="text-gray-600">Đã bán {prod.rating.count}</p>
+    </div>
+
+
+    <p className="text-gray-700 leading-relaxed">{prod.description}</p>
+
+
+    <div className="bg-gray-100 p-4 rounded-md flex items-center space-x-3">
+      <p className="text-xl font-semibold text-gray-800">Giá chỉ:</p>
+      <p className="text-2xl font-bold text-red-600">{prod.price}$</p>
+    </div>
+
+
+    <div className="flex flex-wrap gap-4">
+      <button
                 onClick={() => {
-                  localStorage.setItem("product", JSON.stringify(prod));
-                  navigate("/thanhtoan")
-                }}
-                className=" cursor-pointer bg-emerald-500 px-4 py-2 font-semibold hover:bg-emerald-600 transition-colors duration-300"
-              >
-                Mua ngay
-              </button>
-            </div>
-            <button
-          onClick={() => {
-           
-            navigate(-1);
-          }}
-          className=" absolute bottom-4 right-4  bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-4 py-2 rounded-md"
-        >
-          Quay lại
-        </button>
-          </div>
-        </div>
+                  add();
+                  localStorage.setItem("cart", JSON.stringify([...products, prod]));
+        }}
+        className="flex-1 min-w-[140px] bg-emerald-200 border-2 border-emerald-600 text-emerald-900 font-semibold px-4 py-2 rounded-md hover:bg-emerald-600 hover:text-white transition-colors duration-300"
+      >
+        Thêm vào giỏ hàng
+      </button>
+      <button
+        onClick={() => {
+          localStorage.setItem("product", JSON.stringify(prod));
+          navigate("/thanhtoan");
+        }}
+        className="flex-1 min-w-[140px] bg-emerald-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-emerald-600 transition-colors duration-300"
+      >
+        Mua ngay
+      </button>
+    </div>
+
+  
+    <button
+      onClick={() => navigate(-1)}
+      className="self-end mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-md transition-colors duration-300"
+    >
+      Quay lại
+    </button>
+  </div>
+</div>
+
           
         </>
       )}

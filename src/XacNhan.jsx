@@ -16,22 +16,31 @@ export default function Thanhtoan() {
   console.log(product)
   return (
     <>
-      <div className=" shadow-2xl border-1 border-gray-300 bg-white fixed top-[72px] left-1/2 -translate-x-1/2 w-[1000px] h-[600px]">
-        <p className=" ml-2 mr-2 text-2xl font-semibold p-6  border-b-2 border-gray-400">
-          Xác nhận đơn hàng
-              </p>
-              
-        
-        <button
-          onClick={() => {
-            localStorage.removeItem("product");
-            navigate(-1);
-          }}
-          className=" absolute bottom-12 left-1/2 -translate-1/2 bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-4 py-2 rounded-md"
-        >
-          Quay lại
-        </button>
-      </div>
+      <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+  <div className="shadow-2xl border border-gray-200 bg-white rounded-2xl p-8 w-[90%] max-w-xl text-center">
+   
+    <div className="flex justify-center mb-4">
+      <i className="fa fa-ambulance text-5xl text-emerald-500" aria-hidden="true"></i>
+    </div>
+
+   
+    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+      Đặt hàng thành công!
+    </h2>
+    <p className="text-gray-600 mb-6">
+      Đơn hàng của bạn sẽ được <span className="font-semibold text-emerald-600">ship đến trong 24h</span>.
+    </p>
+
+    
+    <button
+      onClick={() => navigate("/")}
+      className="bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-6 py-3 rounded-lg w-full sm:w-auto"
+    >
+      Tiếp tục mua sắm
+    </button>
+  </div>
+</div>
+
     </>
   );
 }
