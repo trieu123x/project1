@@ -134,7 +134,7 @@ function App() {
               )}
             </button>
 
-            <div className="relative">
+            <div className="relative sm:w-[250px] md:w-[300px] lg:w-[400px]">
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
