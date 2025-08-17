@@ -91,7 +91,7 @@ function App() {
   return (
     <>
       {/* navbar */}
-      <nav className="bg-emerald-500 shadow-md">
+      <nav className="bg-emerald-500  shadow-md">
         <div className="max-w-7xl mx-auto px-6 h-[64px] flex items-center justify-between">
           <h1
             onClick={() => {
@@ -106,35 +106,37 @@ function App() {
 
           <div className="flex items-center gap-8">
             <button
-              onClick={() => {
-                localStorage.removeItem("product");
-                navigate("/")
-              }}
-              className="text-white hover:text-yellow-200 font-medium transition-colors flex items-center gap-1"
-            >
-              <i className="fa fa-shopping-bag"></i> Products
-            </button>
-            <button
-              onClick={() => {
-                setCartCount(0);
-                setShowGiohang(!showGiohang);
-              }}
-              className="text-white hover:text-yellow-200 font-medium transition-colors flex items-center gap-1"
-            >
-              <i
-                className={`fa fa-shopping-cart ${
-                  animateCart ? "animate-bounce" : ""
-                }`}
-              ></i>{" "}
-              Giỏ hàng
-              {cartCount > 0 && (
-                <span className=" bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+  onClick={() => {
+    localStorage.removeItem("product");
+    navigate("/");
+  }}
+  className="text-white hover:text-yellow-200 font-medium transition-colors flex items-center gap-1"
+>
+  <i className="fa fa-shopping-bag"></i>
+  <span className="hidden sm:inline">Products</span>
+</button>
 
-            <div className="relative sm:w-[250px] md:w-[300px] lg:w-[400px]">
+<button
+  onClick={() => {
+    setCartCount(0);
+    setShowGiohang(!showGiohang);
+  }}
+  className="text-white hover:text-yellow-200 font-medium transition-colors flex items-center gap-1 relative"
+>
+  <i
+    className={`fa fa-shopping-cart ${
+      animateCart ? "animate-bounce" : ""
+    }`}
+  ></i>
+  <span className="hidden sm:inline">Giỏ hàng</span>
+  {cartCount > 0 && (
+    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+      {cartCount}
+    </span>
+  )}
+</button>
+
+            <div className="relative ">
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
