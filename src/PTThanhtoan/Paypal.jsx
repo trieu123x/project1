@@ -249,7 +249,8 @@ export default function PayPal() {
               }
               setTimeout(() => {
       window.location.reload(); // reload sau khi navigate
-    }, 100);
+              }, 100);
+              
       }}
       className="bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-6 py-2 rounded-md"
     >

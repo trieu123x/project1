@@ -248,6 +248,7 @@ function App() {
               <button
                 onClick={() => {
                   localStorage.removeItem("product");
+                  setShowGiohang(false);
                   navigate("/thanhtoan");
                 }}
                 className="w-full p-2 text-white font-semibold rounded-lg bg-green-600 hover:bg-green-700 transition"
