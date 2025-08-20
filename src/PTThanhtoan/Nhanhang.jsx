@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState ,useMemo} from "react";
 import { useLocation } from "react-router-dom";
 import {
   BrowserRouter as Router,
@@ -57,6 +57,9 @@ export default function PayPal() {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) setCart(JSON.parse(storedCart));
   }, []);
+  const totalPrice = useMemo(() => {
+   return cart.reduce((sum, i) => sum + i.price * i.count, 0);
+  },[cart])
   return (
     <>
       <div className="max-w-3xl mx-auto mt-12 p-6 bg-white shadow-2xl rounded-xl border border-gray-200">
@@ -164,16 +167,30 @@ export default function PayPal() {
                   </div>
                   <div className="flex flex-col justify-between text-center md:text-left gap-2">
                     <p className="text-lg font-bold text-gray-800">{item.title}</p>
-                    <p className="text-xl font-bold text-red-500">{item.price} $</p>
+                  <p className="text-xl font-bold text-red-500">{item.price} $</p>
+                  <p className="text-lg text-gray-800">Số lượng {item.count}</p>
                   </div>
                 </div>
              
             ))
+            
           )}
-  </div>
+        </div>
+        {product && (
+          <p className="text-xl font-semibold text-red-600 bg-gray-100 p-3 rounded-lg shadow-md">
+  Tổng tiền: {product.price.toLocaleString("vi-VN")} ₫
+</p>
+        )}
+        {cart && cart.length > 0 && product == null && (
+            <p className="text-xl font-semibold text-red-600 bg-gray-100 p-3 rounded-lg shadow-md">
+  Tổng tiền: {totalPrice.toLocaleString("vi-VN")} ₫
+</p>
+            
+          )}
+
 
  
-  <div className="flex flex-col md:flex-row justify-end gap-4">
+  <div className="flex mt-4 flex-col md:flex-row justify-end gap-4">
     <button
       onClick={() => {
         handleSubmit();

@@ -12,7 +12,7 @@ function Product({ products, onAddProduct }) {
     onAddProduct(prod);
   };
   useEffect(() => {
-    fetch(`https://fakestoreapi.com/products/${id}`)
+    fetch(`https://68a1ffce6f8c17b8f5db45c7.mockapi.io/product/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setProd(data);
@@ -53,10 +53,10 @@ useEffect(() => {
  
     <div className="flex items-center space-x-4">
       <p className="px-2 py-1 text-sm rounded-sm border border-amber-400 bg-amber-100 flex items-center">
-        {prod.rating.rate}{" "}
+        {prod.rate}{" "}
         <i className="text-amber-500 fa-solid fa-star ml-1"></i>
       </p>
-      <p className="text-gray-600">Đã bán {prod.rating.count}</p>
+      <p className="text-gray-600">Đã bán {prod.count}</p>
     </div>
 
 
@@ -65,7 +65,7 @@ useEffect(() => {
 
     <div className="bg-gray-100 p-4 rounded-md flex items-center space-x-3">
       <p className="text-xl font-semibold text-gray-800">Giá chỉ:</p>
-      <p className="text-2xl font-bold text-red-600">{prod.price}$</p>
+      <p className="text-2xl font-bold text-red-600">{prod.price.toLocaleString("en-US")} VND</p>
     </div>
 
 
@@ -73,7 +73,7 @@ useEffect(() => {
       <button
                 onClick={() => {
                   add();
-                  localStorage.setItem("cart", JSON.stringify([...products, prod]));
+                  
         }}
         className="flex-1 min-w-[140px] bg-emerald-200 border-2 border-emerald-600 text-emerald-900 font-semibold px-4 py-2 rounded-md hover:bg-emerald-600 hover:text-white transition-colors duration-300"
       >

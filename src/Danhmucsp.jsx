@@ -117,10 +117,10 @@ function Danhmucsp({ products }) {
         const category = product.category;
 
         if (
-          (category === "men's clothing" && !quanaonam) ||
-          (category === "women's clothing" && !quanaonu) ||
-          (category === "electronics" && !dienmay) ||
-          (category === "jewelery" && !trangsuc)
+          (category === "quần áo nam" && !quanaonam) ||
+          (category === "quần áo nữ" && !quanaonu) ||
+          (category === "đồ điện tử" && !dienmay) ||
+          (category === "trang sức" && !trangsuc)
         ) {
           return null;
         }
@@ -143,15 +143,15 @@ function Danhmucsp({ products }) {
                   {product.title}
                 </p>
                 <p className="font-bold text-red-600 text-lg">
-                  {product.price}$
+                  {product.price.toLocaleString("en-US")}$
                 </p>
                 <div className="mt-auto flex items-center space-x-2">
                   <p className="px-2 py-0.5 text-sm rounded-md border border-amber-400 bg-amber-100">
-                    {product.rating.rate}{" "}
+                    {product.rate}{" "}
                     <i className="text-amber-500 fa-solid fa-star"></i>
                   </p>
                   <p className="text-sm text-gray-600">
-                    Đã bán {product.rating.count}
+                    Đã bán {product.count}
                   </p>
                 </div>
               </div>
@@ -185,11 +185,11 @@ function Danhmucsp({ products }) {
         </p>
         <div className="mt-auto flex items-center space-x-2">
           <p className="px-2 py-0.5 text-sm rounded-md border border-amber-400 bg-amber-100">
-            {products[random].rating.rate}{" "}
+            {products[random].rate}{" "}
             <i className="text-amber-500 fa-solid fa-star"></i>
           </p>
           <p className="text-sm text-gray-600">
-            Đã bán {products[random].rating.count}
+            Đã bán {products[random].count}
           </p>
         </div>
       </div>
