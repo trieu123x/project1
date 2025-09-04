@@ -13,7 +13,6 @@ export default function Thanhtoan() {
     const navigate = useNavigate();
     const location = useLocation();
     const {product} = location.state || {};
-  console.log(product)
   return (
     <>
       <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">

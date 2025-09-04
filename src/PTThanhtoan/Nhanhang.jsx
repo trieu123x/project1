@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState ,useMemo} from "react";
+import React, { use, useEffect, useState, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import {
   BrowserRouter as Router,
@@ -7,6 +7,8 @@ import {
   Link,
   useNavigate,
 } from "react-router-dom";
+import { handleBuy } from "./handleBuy";
+import { handleBuyCart } from "./handleBuyCart";
 
 export default function PayPal() {
   const navigate = useNavigate();
@@ -23,6 +25,7 @@ export default function PayPal() {
   const [emes, setEmes] = useState(false);
   const [show, setShow] = useState(false);
   const [visible, setVisible] = useState(false);
+  // luu form
   useEffect(() => {
     const storedData = localStorage.getItem("formDataN");
     if (storedData) {
@@ -30,27 +33,28 @@ export default function PayPal() {
       setRemember(true);
     }
   }, []);
-  const handleChange = (e) => { 
+  const handleChange = (e) => {
     setformDataN({
-      ...formDataN,[e.target.name]: e.target.value})
-  }
-  const handleSubmit = (e) => { 
+      ...formDataN,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleSubmit = (e) => {
     if (remember) {
       localStorage.setItem("formDataN", JSON.stringify(formDataN));
-    }
-    else {
+    } else {
       localStorage.removeItem("formDataN");
     }
-  }
+  };
   useEffect(() => {
-  if (emes) {
-    setShow(true);     
-    setTimeout(() => setVisible(true), 50); 
-  } else {
-    setVisible(false); 
-    setTimeout(() => setShow(false), 500); 
-  }
-}, [emes]);
+    if (emes) {
+      setShow(true);
+      setTimeout(() => setVisible(true), 50);
+    } else {
+      setVisible(false);
+      setTimeout(() => setShow(false), 500);
+    }
+  }, [emes]);
   useEffect(() => {
     const stored = localStorage.getItem("product");
     if (stored) setProduct(JSON.parse(stored));
@@ -58,180 +62,196 @@ export default function PayPal() {
     if (storedCart) setCart(JSON.parse(storedCart));
   }, []);
   const totalPrice = useMemo(() => {
-   return cart.reduce((sum, i) => sum + i.price * i.count, 0);
-  },[cart])
+    return cart.reduce((sum, i) => sum + i.price * i.cnt, 0);
+  }, [cart]);
   return (
     <>
       <div className="max-w-3xl mx-auto mt-12 p-6 bg-white shadow-2xl rounded-xl border border-gray-200">
-  <p className="text-2xl font-semibold mb-6 flex items-center border-b pb-3">
-    <i className="text-4xl fa-solid fa-credit-card mr-3 text-emerald-500"></i>
-    Thanh toán khi nhận hàng
-  </p>
+        <p className="text-2xl font-semibold mb-6 flex items-center border-b pb-3">
+          <i className="text-4xl fa-solid fa-credit-card mr-3 text-emerald-500"></i>
+          Thanh toán khi nhận hàng
+        </p>
         {show && (
           <div
-  className={` fixed top-12 left-1/2 -translate-1/2 bg-red-100 text-red-700 p-4 rounded-md transition-all duration-500 
-    ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3 pointer-events-none"}
+            className={` fixed top-12 left-1/2 -translate-1/2 bg-red-100 text-red-700 p-4 rounded-md transition-all duration-500 
+    ${
+      visible
+        ? "opacity-100 translate-y-0"
+        : "opacity-0 -translate-y-3 pointer-events-none"
+    }
   `}
->
-  <p>Bạn cần điền đầy đủ thông tin trước khi tiếp tục</p>
-</div>
-    )}
+          >
+            <p>Bạn cần điền đầy đủ thông tin trước khi tiếp tục</p>
+          </div>
+        )}
 
-  <div className="mb-6">
-    <p className="text-lg font-semibold mb-4">Địa chỉ</p>
-    <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <input
-        name="city"
-        value={formDataN.city}
-        onChange={handleChange}
-        type="text"
-        placeholder="Thành phố"
-        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
-      />
-      <input
-        name="district"
-        value={formDataN.district}
-        onChange={handleChange}
-        type="text"
-        placeholder="Quận/Huyện"
-        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
-      />
-      <input
-        name="ward"
-        value={formDataN.ward}
-        onChange={handleChange}
-        type="text"
-        placeholder="Xã/Phường"
-        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
-      />
-      <input
-        name="address"
-        value={formDataN.address}
-        onChange={handleChange}
-        type="text"
-        placeholder="Địa chỉ chi tiết"
-        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400 col-span-1 md:col-span-2"
-      />
-    </form>
-  </div>
-
-  <div className="mb-6">
-    <p className="text-lg font-semibold mb-2">Số điện thoại</p>
-    <input
-      name="phone"
-      value={formDataN.phone}
-      onChange={handleChange}
-      type="number"
-      placeholder="Số điện thoại"
-      className="w-full md:w-1/2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
-    />
-  </div>
-
-
-  <div className="mb-8 flex items-center space-x-2">
-    <input
-      type="checkbox"
-      checked={remember}
-      onChange={(e) => setRemember(e.target.checked)}
-      className="w-4 h-4"
-    />
-    <span className="text-gray-700">Lưu thông tin cho lần sau</span>
+        <div className="mb-6">
+          <p className="text-lg font-semibold mb-4">Địa chỉ</p>
+          <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              name="city"
+              value={formDataN.city}
+              onChange={handleChange}
+              type="text"
+              placeholder="Thành phố"
+              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            />
+            <input
+              name="district"
+              value={formDataN.district}
+              onChange={handleChange}
+              type="text"
+              placeholder="Quận/Huyện"
+              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            />
+            <input
+              name="ward"
+              value={formDataN.ward}
+              onChange={handleChange}
+              type="text"
+              placeholder="Xã/Phường"
+              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            />
+            <input
+              name="address"
+              value={formDataN.address}
+              onChange={handleChange}
+              type="text"
+              placeholder="Địa chỉ chi tiết"
+              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400 col-span-1 md:col-span-2"
+            />
+          </form>
         </div>
-        <div className="mt-8">
-    <p className="text-lg font-semibold mb-4 border-b pb-2">Thông tin sản phẩm</p>
-    {product && (
-      <div className="flex mb-4 flex-col md:flex-row items-center md:items-start bg-gray-50 shadow-sm rounded-xl p-4 gap-6">
-        <div className="flex-shrink-0">
-          <img
-            className="w-[180px] h-[180px] object-contain rounded-lg border border-gray-200 bg-white p-2"
-            src={product.image}
-            alt={product.title}
+
+        <div className="mb-6">
+          <p className="text-lg font-semibold mb-2">Số điện thoại</p>
+          <input
+            name="phone"
+            value={formDataN.phone}
+            onChange={handleChange}
+            type="number"
+            placeholder="Số điện thoại"
+            className="w-full md:w-1/2 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-400"
           />
         </div>
-        <div className="flex flex-col justify-between text-center md:text-left gap-2">
-          <p className="text-lg font-bold text-gray-800">{product.title}</p>
-          <p className="text-xl font-bold text-red-500">{product.price} $</p>
+
+        <div className="mb-8 flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={remember}
+            onChange={(e) => setRemember(e.target.checked)}
+            className="w-4 h-4"
+          />
+          <span className="text-gray-700">Lưu thông tin cho lần sau</span>
         </div>
-      </div>
+        <div className="mt-8">
+          <p className="text-lg font-semibold mb-4 border-b pb-2">
+            Thông tin sản phẩm
+          </p>
+          {product && (
+            <div className="flex mb-4 flex-col md:flex-row items-center md:items-start bg-gray-50 shadow-sm rounded-xl p-4 gap-6">
+              <div className="flex-shrink-0">
+                <img
+                  className="w-[180px] h-[180px] object-contain rounded-lg border border-gray-200 bg-white p-2"
+                  src={product.image}
+                  alt={product.title}
+                />
+              </div>
+              <div className="flex flex-col justify-between text-center md:text-left gap-2">
+                <p className="text-lg font-bold text-gray-800">
+                  {product.title}
+                </p>
+                <p className="text-xl font-bold text-red-500">
+                  {product.price} $
+                </p>
+              </div>
+            </div>
           )}
-          {cart && cart.length > 0 && product == null && (
+          {cart &&
+            cart.length > 0 &&
+            product == null &&
             cart.map((item) => (
-            
-                <div key={item.id} className="flex mb-4 flex-col md:flex-row items-center md:items-start bg-gray-50 shadow-sm rounded-xl p-4 gap-6">
-                  <div className="flex-shrink-0">
-                    <img
-                      className="w-[180px] h-[180px] object-contain rounded-lg border border-gray-200 bg-white p-2"
-                      src={item.image}
-                      alt={item.title}
-                    />
-                  </div>
-                  <div className="flex flex-col justify-between text-center md:text-left gap-2">
-                    <p className="text-lg font-bold text-gray-800">{item.title}</p>
-                  <p className="text-xl font-bold text-red-500">{item.price} $</p>
-                  <p className="text-lg text-gray-800">Số lượng {item.count}</p>
-                  </div>
+              <div
+                key={item.id}
+                className="flex mb-4 flex-col md:flex-row items-center md:items-start bg-gray-50 shadow-sm rounded-xl p-4 gap-6"
+              >
+                <div className="flex-shrink-0">
+                  <img
+                    className="w-[180px] h-[180px] object-contain rounded-lg border border-gray-200 bg-white p-2"
+                    src={item.image}
+                    alt={item.title}
+                  />
                 </div>
-             
-            ))
-            
-          )}
+                <div className="flex flex-col justify-between text-center md:text-left gap-2">
+                  <p className="text-lg font-bold text-gray-800">
+                    {item.title}
+                  </p>
+                  <p className="text-xl font-bold text-red-500">
+                    {item.price} $
+                  </p>
+                  <p className="text-lg text-gray-800">Số lượng {item.cnt}</p>
+                </div>
+              </div>
+            ))}
         </div>
         {product && (
           <p className="text-xl font-semibold text-red-600 bg-gray-100 p-3 rounded-lg shadow-md">
-  Tổng tiền: {product.price.toLocaleString("vi-VN")} ₫
-</p>
+            Tổng tiền: {product.price.toLocaleString("vi-VN")} ₫
+          </p>
         )}
         {cart && cart.length > 0 && product == null && (
-            <p className="text-xl font-semibold text-red-600 bg-gray-100 p-3 rounded-lg shadow-md">
-  Tổng tiền: {totalPrice.toLocaleString("vi-VN")} ₫
-</p>
-            
-          )}
+          <p className="text-xl font-semibold text-red-600 bg-gray-100 p-3 rounded-lg shadow-md">
+            Tổng tiền: {totalPrice.toLocaleString("vi-VN")} ₫
+          </p>
+        )}
 
-
- 
-  <div className="flex mt-4 flex-col md:flex-row justify-end gap-4">
-    <button
-      onClick={() => {
-        handleSubmit();
-        navigate(-1);
-      }}
-      className="bg-gray-200 hover:bg-gray-300 transition-colors duration-300 text-gray-700 font-semibold px-6 py-2 rounded-md"
-    >
-      Quay lại
-    </button>
-    <button
+        <div className="flex mt-4 flex-col md:flex-row justify-end gap-4">
+          <button
             onClick={() => {
-  {
-    if (!formDataN.city || !formDataN.district || !formDataN.ward || !formDataN.address || !formDataN.phone) {
-      setEmes(true);
-      setTimeout(() => {
-        setEmes(false);
-      }, 2000);
-      return;
-    }
-  }
-  handleSubmit();
-  navigate("/xacnhan");
-  localStorage.removeItem("product");
-  {
-    if (cart && cart.length > 0 && product == null) {
-      localStorage.removeItem("cart", JSON.stringify(cart));
-    }
+              handleSubmit();
+              navigate(-1);
+            }}
+            className="bg-gray-200 hover:bg-gray-300 transition-colors duration-300 text-gray-700 font-semibold px-6 py-2 rounded-md"
+          >
+            Quay lại
+          </button>
+          <button
+            onClick={async() => {
+              {
+                if (
+                  !formDataN.city ||
+                  !formDataN.district ||
+                  !formDataN.ward ||
+                  !formDataN.address ||
+                  !formDataN.phone
+                ) {
+                  setEmes(true);
+                  setTimeout(() => {
+                    setEmes(false);
+                  }, 2000);
+                  return;
+                }
+              }
+              handleSubmit();
+              {if (product){await handleBuy(product)}}
+              navigate("/xacnhan");
+              localStorage.removeItem("product");
+              {
+                if (cart && cart.length > 0 && product == null) {
+                  await handleBuyCart(cart)
+                  localStorage.removeItem("cart", JSON.stringify(cart));
+                }
               }
               setTimeout(() => {
-      window.location.reload(); // reload sau khi navigate
-    }, 100);
+                window.location.reload(); // reload sau khi navigate
+              }, 100);
             }}
-            
-
-      className="bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-6 py-2 rounded-md"
-    >
-      Tiếp tục
-    </button>
-  </div>
-</div>
-
+            className="bg-emerald-500 hover:bg-emerald-600 transition-colors duration-300 text-white font-semibold px-6 py-2 rounded-md"
+          >
+            Tiếp tục
+          </button>
+        </div>
+      </div>
     </>
   );
 }

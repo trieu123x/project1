@@ -12,13 +12,20 @@ export default function Dangki() {
     username: "",
     password: "",
     role: "user",
-    rePassword: "",
+    rePassword:"",
+    email:""
   });
     const [err, setErr] = useState(false);
     const navigate = useNavigate()
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const {name, value} = e.target
+    setForm({ ...form, [name]: value });
+    if (name === "email") {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!re.test(value) && value != "") setErr("Email không hợp lệ")
+      else setErr(null)
+    }
   };
 
   const handleRegister = async () => {
@@ -78,6 +85,19 @@ export default function Dangki() {
           name="name"
           placeholder="Tên người dùng"
           value={form.name}
+          onChange={handleChange}
+          className="border border-gray-300 rounded-xl p-3 pl-10 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+          </div>
+          <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+          👤
+        </span>
+        <input
+          type="text"
+          name="email"
+          placeholder="Email"
+          value={form.email}
           onChange={handleChange}
           className="border border-gray-300 rounded-xl p-3 pl-10 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
@@ -141,7 +161,8 @@ export default function Dangki() {
           !form.name ||
           !form.username ||
           !form.password ||
-          !form.rePassword
+          !form.rePassword ||
+          !form.email
         ) {
           setErr("Vui lòng nhập đầy đủ thông tin!");
           setTimeout(() => setErr(false), 3000);

@@ -7,6 +7,8 @@ import {
   Link,
   useNavigate,
 } from "react-router-dom";
+import { handleBuy } from "./handleBuy";
+import { handleBuyCart } from "./handleBuyCart";
 
 export default function PayPal() {
   const navigate = useNavigate();
@@ -237,7 +239,7 @@ export default function PayPal() {
             Quay lại
           </button>
           <button
-            onClick={() => {
+            onClick={async() => {
               {
                 if (
                   !formData.cardNumber ||
@@ -258,10 +260,12 @@ export default function PayPal() {
                 }
               }
               handleSubmit();
+              {if (product){await handleBuy(product)}}
               navigate("/xacnhan");
               localStorage.removeItem("product");
               {
-    if (cart && cart.length > 0 && product == null) {
+                if (cart && cart.length > 0 && product == null) {
+      await handleBuyCart(cart)
       localStorage.removeItem("cart", JSON.stringify(cart));
     }
               }

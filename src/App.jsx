@@ -16,6 +16,10 @@ import Nhanhang from "./PTThanhtoan/Nhanhang";
 import Xacnhan from "./XacNhan";
 import Dangki from "./dangki";
 import Dangnhap from "./dangnhap";
+import Profile from "./thongtincanhan/trangchu";
+import Admin from "./quanly/admin";
+import Sanpham from "./quanly/sanpham";
+import Dashboard from "./quanly/dashboard";
 
 function App() {
   const [show, setShow] = useState(false);
@@ -29,14 +33,15 @@ function App() {
   const [animateCart, setAnimateCart] = useState(false);
   const [visible, setVisible] = useState(false);
   const [user, setUser] = useState(null);
-
+  const [showMenuUser, setShowMenuUser] = useState(false);
+  //user
   useEffect(() => {
-    const u = JSON.parse(localStorage.getItem("user"));
+    const u = localStorage.getItem("userName");
     if (u) setUser(u);
   });
-
+  // tong tien trong gio hang
   const totalPrice = useMemo(() => {
-    return products.reduce((sum, i) => sum + i.price * i.count, 0);
+    return products.reduce((sum, i) => sum + i.price * i.cnt, 0);
   }, [products]);
 
   // bat tat gio hang
@@ -57,14 +62,16 @@ function App() {
       setProducts(JSON.parse(storedCart));
     }
   }, []);
-
-  useEffect(() => {
+  const fetchProducts = async () => {
     fetch("https://68a1ffce6f8c17b8f5db45c7.mockapi.io/product")
       .then((response) => response.json())
       .then((data) => {
         setItems(data);
       })
       .catch((error) => console.error("Error fetching data:", error));
+  }
+  useEffect(() => {
+    fetchProducts()
   }, []);
   // them sp vao gio hang
   const addProducts = (newProduct) => {
@@ -74,10 +81,10 @@ function App() {
 
       if (existingProduct) {
         updated = prev.map((p) =>
-          p.id === newProduct.id ? { ...p, count: p.count + 1 } : p
+          p.id === newProduct.id ? { ...p, cnt: p.cnt + 1 } : p
         );
       } else {
-        updated = [...prev, { ...newProduct, count: 1 }];
+        updated = [...prev, { ...newProduct, cnt: 1 }];
       }
 
       //  lưu  dữ liệu mới nhất
@@ -138,18 +145,21 @@ function App() {
                 localStorage.removeItem("product");
                 navigate("/");
               }}
-              className="text-white hover:text-yellow-200 font-medium transition-colors flex items-center gap-1"
+              className="cursor-pointer relative text-white  font-medium transition-colors flex items-center gap-1
+             after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-yellow-200
+             after:w-0 after:transition-all after:duration-300 hover:after:w-full"
             >
               <i className="fa fa-shopping-bag"></i>
               <span className="hidden sm:inline">Products</span>
             </button>
-
             <button
               onClick={() => {
                 setCartCount(0);
                 setShowGiohang(!showGiohang);
               }}
-              className="text-white hover:text-yellow-200 font-medium transition-colors flex items-center gap-1 relative"
+              className="cursor-pointer relative text-white  font-medium transition-colors flex items-center gap-1
+             after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-yellow-200
+             after:w-0 after:transition-all after:duration-300 hover:after:w-full"
             >
               <i
                 className={`fa fa-shopping-cart ${
@@ -203,27 +213,62 @@ function App() {
               )}
             </div>
           </div>
-          {!user && (<div>
-            <button
-              onClick={() => navigate("/dangki")}
-              className="bg-white text-emerald-600 px-4 py-2 rounded-full font-semibold shadow hover:bg-gray-100 transition-colors mr-2"
-            >
-              Đăng ký
-            </button>
+          {!user && (
+            <div>
+              <button
+                onClick={() => navigate("/dangki")}
+                className="bg-white text-emerald-600 px-4 py-2 rounded-full font-semibold shadow hover:bg-gray-100 transition-colors mr-2"
+              >
+                Đăng ký
+              </button>
 
-            <button
-              onClick={() => navigate("/dangnhap")}
-              className="bg-yellow-400 text-white px-4 py-2 rounded-full font-semibold shadow hover:bg-yellow-500 transition-colors"
-            >
-              Đăng nhập
-            </button>
-          </div>)}
+              <button
+                onClick={() => navigate("/dangnhap")}
+                className="bg-yellow-400 text-white px-4 py-2 rounded-full font-semibold shadow hover:bg-yellow-500 transition-colors"
+              >
+                Đăng nhập
+              </button>
+            </div>
+          )}
           {user && (
-  <div className="flex items-center gap-2 px-4 py-2 ">
-    <i className="fas fa-user text-white"></i>
-    <p className="text-white font-medium">{user.username}</p>
-  </div>
-)}
+            <div
+              onClick={() => setShowMenuUser(!showMenuUser)}
+              className="cursor-pointer flex-col relative text-white font-medium transition-colors flex items-center gap-1
+             after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-yellow-200
+             after:w-0 after:transition-all after:duration-300 hover:after:w-full"
+            >
+              <p className="text-white font-medium">
+                <i className="fas fa-user text-white"></i> {user}
+              </p>
+
+              {showMenuUser && (
+                <div className="absolute top-full mt-2 bg-white w-48 rounded-lg shadow-lg text-gray-800">
+                  <ul className="flex flex-col">
+                    <li
+                      onClick={()=>navigate("/thongtincanhan/thongtin")}
+                      className=" rounded-lg px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                      Thông tin cá nhân
+                    </li>
+                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                      Lịch sử mua hàng
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-red-100 text-red-600 cursor-pointer"
+                      onClick={() => {
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("userId");
+                        localStorage.removeItem("userName");
+                        navigate("/dangnhap");
+                        window.location.reload();
+                      }}
+                    >
+                      Đăng xuất
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </nav>
       {/* Routes */}
@@ -243,6 +288,11 @@ function App() {
         <Route path="/xacnhan" element={<Xacnhan></Xacnhan>}></Route>
         <Route path="/dangki" element={<Dangki></Dangki>}></Route>
         <Route path="/dangnhap" element={<Dangnhap></Dangnhap>}></Route>
+        <Route path="/thongtincanhan/thongtin" element={<Profile></Profile>}></Route>
+        <Route path="/admin" element={<Admin items={items}></Admin>}>
+          <Route index element={<Dashboard />}></Route>
+          <Route path="sanpham" element={<Sanpham fetchProducts={fetchProducts} products={items}></Sanpham>}></Route>
+        </Route>
       </Routes>
       {/* Gio hang */}
       {showGiohang && (
@@ -276,7 +326,7 @@ function App() {
                       {product.price.toLocaleString("en-US")} VND
                     </p>
                   </div>
-                  <p className=" ml-6">Số lượng {product.count}</p>
+                  <p className=" ml-6">Số lượng {product.cnt}</p>
                   <button
                     className="ml-4 mr-4 font-bold cursor-pointer"
                     onClick={() => {
@@ -284,7 +334,7 @@ function App() {
                         setProducts((prev) =>
                           prev.map((p) =>
                             p.id == product.id
-                              ? { ...p, count: p.count - 1 }
+                              ? { ...p, cnt: p.cnt - 1 }
                               : p
                           )
                         );
