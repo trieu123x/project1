@@ -20,6 +20,7 @@ import Profile from "./thongtincanhan/trangchu";
 import Admin from "./quanly/admin";
 import Sanpham from "./quanly/sanpham";
 import Dashboard from "./quanly/dashboard";
+import { li } from "framer-motion/client";
 
 function App() {
   const [show, setShow] = useState(false);
@@ -34,11 +35,14 @@ function App() {
   const [visible, setVisible] = useState(false);
   const [user, setUser] = useState(null);
   const [showMenuUser, setShowMenuUser] = useState(false);
+  const [role, setRole] = useState();
   //user
   useEffect(() => {
     const u = localStorage.getItem("userName");
     if (u) setUser(u);
-  });
+    const r = localStorage.getItem("role");
+    if (r) setRole(r);
+  }, []);
   // tong tien trong gio hang
   const totalPrice = useMemo(() => {
     return products.reduce((sum, i) => sum + i.price * i.cnt, 0);
@@ -69,9 +73,9 @@ function App() {
         setItems(data);
       })
       .catch((error) => console.error("Error fetching data:", error));
-  }
+  };
   useEffect(() => {
-    fetchProducts()
+    fetchProducts();
   }, []);
   // them sp vao gio hang
   const addProducts = (newProduct) => {
@@ -243,15 +247,23 @@ function App() {
 
               {showMenuUser && (
                 <div className="absolute top-full mt-2 bg-white w-48 rounded-lg shadow-lg text-gray-800">
-                  <ul className="flex flex-col">
+                  <ul className="flex m-2 flex-col">
+                    {role == "admin" && (
+                      <li onClick={()=> navigate("/admin")}
+                        className="px-4 rounded-md ease-in transition duration-300 py-2 bg-green-300 hover:bg-green-100 cursor-pointer">
+                        Dashboard
+                      </li>
+                    )}
                     <li
-                      onClick={()=>navigate("/thongtincanhan/thongtin")}
-                      className=" rounded-lg px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                      onClick={() => navigate("/thongtincanhan/thongtin")}
+                      className=" rounded-lg px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
                       Thông tin cá nhân
                     </li>
                     <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
                       Lịch sử mua hàng
                     </li>
+                    
                     <li
                       className="px-4 py-2 hover:bg-red-100 text-red-600 cursor-pointer"
                       onClick={() => {
@@ -288,10 +300,18 @@ function App() {
         <Route path="/xacnhan" element={<Xacnhan></Xacnhan>}></Route>
         <Route path="/dangki" element={<Dangki></Dangki>}></Route>
         <Route path="/dangnhap" element={<Dangnhap></Dangnhap>}></Route>
-        <Route path="/thongtincanhan/thongtin" element={<Profile></Profile>}></Route>
+        <Route
+          path="/thongtincanhan/thongtin"
+          element={<Profile></Profile>}
+        ></Route>
         <Route path="/admin" element={<Admin items={items}></Admin>}>
           <Route index element={<Dashboard />}></Route>
-          <Route path="sanpham" element={<Sanpham fetchProducts={fetchProducts} products={items}></Sanpham>}></Route>
+          <Route
+            path="sanpham"
+            element={
+              <Sanpham fetchProducts={fetchProducts} products={items}></Sanpham>
+            }
+          ></Route>
         </Route>
       </Routes>
       {/* Gio hang */}
@@ -333,9 +353,7 @@ function App() {
                       if (product.count > 1) {
                         setProducts((prev) =>
                           prev.map((p) =>
-                            p.id == product.id
-                              ? { ...p, cnt: p.cnt - 1 }
-                              : p
+                            p.id == product.id ? { ...p, cnt: p.cnt - 1 } : p
                           )
                         );
                       } else {

@@ -17,6 +17,7 @@ import {
 } from "react-router-dom";
 
 import { motion } from "framer-motion";
+import { li } from "framer-motion/client";
 
 export default function Sanpham({ products, fetchProducts }) {
   const [quanaonam, setQuanaonam] = useState(true);
@@ -26,6 +27,9 @@ export default function Sanpham({ products, fetchProducts }) {
   const [showAdd, setShowAdd] = useState(false);
   const [err, setErr] = useState(false);
   const [tb, setTb] = useState(false);
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [selected, setSelected] = useState([]);
+  const [showDelete, setShowDelete] = useState(false);
   const [form, setForm] = useState({
     title: "",
     price: null,
@@ -76,27 +80,47 @@ export default function Sanpham({ products, fetchProducts }) {
       setTimeout(() => setErr(false), 3000);
     }
   };
-
+  const toggleSelect = (pr) => {
+    if (selected.find((p)=> p.id === pr.id)) {
+      setSelected(selected.filter((x) => x.id !== pr.id));
+    } else {
+      setSelected([...selected, pr]);
+    }
+  };
+  const deleteProduct = async (prs) => {
+    for (const pr of prs) {
+      try {
+        await Promise.all(
+      prs.map((pr) =>
+        fetch(`https://68a1ffce6f8c17b8f5db45c7.mockapi.io/product/${pr.id}`, {
+          method: "DELETE",
+        })
+      )
+    );
+        fetchProducts()
+        setSelected([])
+        setTb("Xóa sản phẩm thành công")
+        setTimeout(()=>{
+          setTb(null)
+        }, 3000)
+        setShowDelete(false)
+      } catch (err) {
+        setErr(`Lỗi ${err}`)
+        setTimeout(()=>{
+          setErr(null)
+        },3000)
+      }
+    }
+  };
+  console.log(selected);
   return (
     <>
-      <div className="flex flex-col  mt-4 ml-4 gap-6">
-        <div className="w-full space-x-2 flex flex-row h-[60px] bg-amber-300">
-          <button onClick={() => setShowAdd(true)}>Thêm sản phẩm</button>
-          <button>Xóa sản phẩm</button>
-        </div>
-        {showAdd && (
-          <>
-            {/* Lớp nền mờ */}
-            <div className="fixed inset-0 bg-black opacity-40 z-40"></div>
-
-            {/* Modal */}
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              {err && (
+      {err && (
                 <motion.div
                   initial={{ y: -50, opacity: 0 }} // bắt đầu cao hơn và mờ
                   animate={{ y: 0, opacity: 1 }} // trượt xuống và hiện rõ
                   transition={{ duration: 0.4, ease: "easeOut" }} // thời gian và easing
-                  className="fixed top-12 bg-red-100 text-red-600 p-3 mb-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
+                  className="fixed z-50 top-12 bg-red-100 text-red-600 p-3 mb-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
                 >
                   {err}
                 </motion.div>
@@ -106,11 +130,134 @@ export default function Sanpham({ products, fetchProducts }) {
                   initial={{ y: -50, opacity: 0 }} // bắt đầu cao hơn và mờ
                   animate={{ y: 0, opacity: 1 }} // trượt xuống và hiện rõ
                   transition={{ duration: 0.4, ease: "easeOut" }} // thời gian và easing
-                  className="fixed top-12 bg-green-100 text-green-600 p-3 mb-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
+                  className="fixed z-50 top-12 bg-green-100 text-green-600 p-3 mb-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
                 >
                   {tb}
                 </motion.div>
               )}
+      <div className="flex flex-col  mt-4 ml-4 gap-6">
+        <div className="w-full space-x-2 flex flex-row h-[60px] bg-amber-300">
+          <button
+            onClick={() => {
+              setDeleteMode(!deleteMode);
+              setSelected([]);
+            }}
+          >
+            Xóa sản phẩm
+          </button>
+          {deleteMode && (
+            <div>
+              
+              <motion.div
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="fixed top-12 z-50 bg-gray-200 p-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
+              >
+                <p className="p-2 text-red-600">
+                  Chọn các sản phẩm bạn muốn xóa
+                </p>
+
+                <div className="flex flex-row justify-center gap-4 p-2">
+                  <button
+                    onClick={() => {
+                      setDeleteMode(!deleteMode);
+                      setSelected([]);
+                    }}
+                    className="px-4 py-2 rounded-lg border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 hover:shadow transition"
+                  >
+                    Quay lại
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      {
+                        if (selected.length == 0) {
+                          setErr("Bạn cần chọn ít nhất 1 sản phẩm")
+                          setTimeout(() => {
+                            setErr(null)
+                          }, 3000)
+                          return
+                      }}
+                      setShowDelete(true);
+                      setDeleteMode(false);
+                    }}
+                    className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 hover:shadow transition"
+                  >
+                    Tiếp tục
+                  </button>
+                </div>
+                {err && (<><p>Bạn cần chọn ít nhất 1 sản phẩm</p></>)}
+              </motion.div>
+            </div>
+          )}
+        </div>
+        {showDelete && (
+          <>
+            {/* Lớp nền mờ */}
+            <div className="fixed inset-0 bg-black opacity-40 z-40"></div>
+
+            {/* Modal */}
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              
+              <div className="bg-white p-8 space-y-6 flex flex-col rounded-2xl shadow-2xl w-[800px]">
+                {/* Tiêu đề */}
+                <h2 className="text-2xl font-bold text-center text-gray-800">
+                  Danh sách sản phẩm bạn muốn xóa
+                </h2>
+
+                {/* Danh sách sản phẩm */}
+                <ul className="max-h-[500px] overflow-auto space-y-4 pr-2">
+                  {selected.map((p) => (
+                    <li
+                      key={p.id}
+                      className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border hover:shadow-md transition"
+                    >
+                      <img
+                        className="w-20 h-20 object-cover rounded-lg border"
+                        src={p.image}
+                        alt={p.title}
+                      />
+                      <div className="flex flex-col flex-1">
+                        <p className="font-semibold text-lg text-gray-800">
+                          {p.title}
+                        </p>
+                        <p className="text-gray-500">{p.price} ₫</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Nút hành động */}
+                <div className="flex flex-row justify-center gap-6 pt-4 border-t">
+                  <button
+                    onClick={() => {
+                      setShowDelete(false);
+                      setSelected([]);
+                    }}
+                    className="px-6 py-2 rounded-lg border border-gray-400 bg-white text-gray-700 font-medium hover:bg-gray-100 hover:shadow transition"
+                  >
+                    Quay lại
+                  </button>
+
+                  <button
+                    onClick={()=>{deleteProduct(selected)}}
+                    className="px-6 py-2 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 hover:shadow-lg transition">
+                    XÓA
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        {showAdd && (
+          <>
+            {/* Lớp nền mờ */}
+            <div className="fixed inset-0 bg-black opacity-40 z-40"></div>
+
+            {/* Modal */}
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              
               <div className="bg-white p-6 space-y-4 flex flex-col rounded-2xl shadow-2xl w-[800px]">
                 <h2 className="text-2xl font-bold text-gray-800 text-center mb-2">
                   Thêm sản phẩm mới
@@ -372,6 +519,15 @@ export default function Sanpham({ products, fetchProducts }) {
 
         <div className="flex-1 flex flex-col lg:flex-row gap-6">
           <ul className="flex-1 max-w-[1000px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            <div
+              onClick={() => setShowAdd(true)}
+              className="cursor-pointer h-[360px] duration-300 hover:shadow-xl hover:scale-105 border border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-4 bg-white shadow-sm"
+            >
+              <div className="w-16 h-16 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+              </div>
+              <p className="text-lg font-medium text-gray-700">Thêm sản phẩm</p>
+            </div>
             {products.map((product) => {
               const category = product.category;
 
@@ -386,12 +542,28 @@ export default function Sanpham({ products, fetchProducts }) {
 
               return (
                 <li key={product.id}>
-                  <div className="cursor-pointer h-[360px] duration-300 hover:shadow-xl hover:scale-105 border border-gray-200 rounded-2xl flex flex-col bg-white shadow-sm">
+                  <div className="cursor-pointer h-[360px] duration-300 hover:shadow-xl hover:scale-105 border border-gray-200 rounded-2xl flex flex-col bg-white shadow-sm relative">
+                    {/* Checkbox custom */}
+                    {deleteMode && (
+                      <label className="absolute top-3 right-3">
+                        <input
+                          type="checkbox"
+                          checked={selected.some((p) => p.id  == product.id)}
+                          onChange={() => toggleSelect(product)}
+                          className="peer hidden"
+                        />
+                        <div className="w-6 h-6 flex items-center justify-center rounded-md border-2 border-gray-400 bg-white peer-checked:bg-red-500 peer-checked:border-red-500 transition">
+                          <i className="fa-solid fa-check text-white text-xs"></i>
+                        </div>
+                      </label>
+                    )}
+
                     <img
                       className="bg-gray-100 rounded-t-2xl object-contain w-full h-[200px] p-4"
                       src={product.image}
                       alt={product.title}
                     />
+
                     <div className="flex flex-col flex-1 p-3 space-y-2">
                       <p className="line-clamp-2 font-medium text-gray-800">
                         {product.title}
