@@ -30,6 +30,9 @@ export default function Sanpham({ products, fetchProducts }) {
   const [deleteMode, setDeleteMode] = useState(false);
   const [selected, setSelected] = useState([]);
   const [showDelete, setShowDelete] = useState(false);
+  const [showDM, setShowDM] = useState(false);
+  const [prod, setProd] = useState(null);
+  const [edit, setEdit] = useState(null);
   const [form, setForm] = useState({
     title: "",
     price: null,
@@ -81,7 +84,7 @@ export default function Sanpham({ products, fetchProducts }) {
     }
   };
   const toggleSelect = (pr) => {
-    if (selected.find((p)=> p.id === pr.id)) {
+    if (selected.find((p) => p.id === pr.id)) {
       setSelected(selected.filter((x) => x.id !== pr.id));
     } else {
       setSelected([...selected, pr]);
@@ -91,107 +94,233 @@ export default function Sanpham({ products, fetchProducts }) {
     for (const pr of prs) {
       try {
         await Promise.all(
-      prs.map((pr) =>
-        fetch(`https://68a1ffce6f8c17b8f5db45c7.mockapi.io/product/${pr.id}`, {
-          method: "DELETE",
-        })
-      )
-    );
-        fetchProducts()
-        setSelected([])
-        setTb("Xóa sản phẩm thành công")
-        setTimeout(()=>{
-          setTb(null)
-        }, 3000)
-        setShowDelete(false)
+          prs.map((pr) =>
+            fetch(
+              `https://68a1ffce6f8c17b8f5db45c7.mockapi.io/product/${pr.id}`,
+              {
+                method: "DELETE",
+              }
+            )
+          )
+        );
+        fetchProducts();
+        setSelected([]);
+        setTb("Xóa sản phẩm thành công");
+        setTimeout(() => {
+          setTb(null);
+        }, 3000);
+        setShowDelete(false);
       } catch (err) {
-        setErr(`Lỗi ${err}`)
-        setTimeout(()=>{
-          setErr(null)
-        },3000)
+        setErr(`Lỗi ${err}`);
+        setTimeout(() => {
+          setErr(null);
+        }, 3000);
       }
     }
   };
-  console.log(selected);
+  const handleSave = async (p) => {
+    try {
+      const res = await fetch(
+        `https://68a1ffce6f8c17b8f5db45c7.mockapi.io/product/${p.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
+      const data = await res.json();
+      setTb("Cập nhật thông tin sản phẩm thành công");
+      setTimeout(() => {
+        setTb(null);
+      }, 3000);
+      fetchProducts();
+      setProd(data);
+      setEdit(null);
+      setShowAdd(false);
+      setForm({
+        title: "",
+        price: null,
+        description: "",
+        image: "",
+        rate: null,
+        count: null,
+        category: "",
+      });
+    } catch (loi) {
+      setErr(`Thất bại ${loi}`);
+      setTimeout(() => setErr(false), 3000);
+    }
+  };
   return (
     <>
       {err && (
-                <motion.div
-                  initial={{ y: -50, opacity: 0 }} // bắt đầu cao hơn và mờ
-                  animate={{ y: 0, opacity: 1 }} // trượt xuống và hiện rõ
-                  transition={{ duration: 0.4, ease: "easeOut" }} // thời gian và easing
-                  className="fixed z-50 top-12 bg-red-100 text-red-600 p-3 mb-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
-                >
-                  {err}
-                </motion.div>
-              )}
-              {tb && (
-                <motion.div
-                  initial={{ y: -50, opacity: 0 }} // bắt đầu cao hơn và mờ
-                  animate={{ y: 0, opacity: 1 }} // trượt xuống và hiện rõ
-                  transition={{ duration: 0.4, ease: "easeOut" }} // thời gian và easing
-                  className="fixed z-50 top-12 bg-green-100 text-green-600 p-3 mb-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
-                >
-                  {tb}
-                </motion.div>
-              )}
-      <div className="flex flex-col  mt-4 ml-4 gap-6">
-        <div className="w-full space-x-2 flex flex-row h-[60px] bg-amber-300">
+        <motion.div
+          initial={{ y: -50, opacity: 0 }} // bắt đầu cao hơn và mờ
+          animate={{ y: 0, opacity: 1 }} // trượt xuống và hiện rõ
+          transition={{ duration: 0.4, ease: "easeOut" }} // thời gian và easing
+          className="fixed z-999 top-12 bg-red-100 text-red-600 p-3 mb-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
+        >
+          {err}
+        </motion.div>
+      )}
+      {tb && (
+        <motion.div
+          initial={{ y: -50, opacity: 0 }} // bắt đầu cao hơn và mờ
+          animate={{ y: 0, opacity: 1 }} // trượt xuống và hiện rõ
+          transition={{ duration: 0.4, ease: "easeOut" }} // thời gian và easing
+          className="fixed z-999 top-12 bg-green-100 text-green-600 p-3 mb-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
+        >
+          {tb}
+        </motion.div>
+      )}
+      {deleteMode && (
+        <div>
+          <motion.div
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="fixed top-12 z-50 bg-gray-200 p-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
+          >
+            <p className="p-2 text-red-600">Chọn các sản phẩm bạn muốn xóa</p>
+            <div className="flex flex-row justify-center gap-4 p-2">
+              <button
+                onClick={() => {
+                  setDeleteMode(!deleteMode);
+                  setSelected([]);
+                }}
+                className="px-4 py-2 rounded-lg border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 hover:shadow transition"
+              >
+                Quay lại
+              </button>
+              <button
+                onClick={() => {
+                  {
+                    if (selected.length == 0) {
+                      setErr("Bạn cần chọn ít nhất 1 sản phẩm");
+                      setTimeout(() => {
+                        setErr(null);
+                      }, 3000);
+                      return;
+                    }
+                  }
+                  setShowDelete(true);
+                  setDeleteMode(false);
+                }}
+                className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 hover:shadow transition"
+              >
+                Tiếp tục
+              </button>
+            </div>
+            {err && (
+              <>
+                <p>Bạn cần chọn ít nhất 1 sản phẩm</p>
+              </>
+            )}
+          </motion.div>
+        </div>
+      )}
+      <div className="flex flex-col  mt-4 ml-4 mr-4 gap-6">
+        <div className="w-full h-[60px] flex flex-row items-center justify-start gap-4 px-4 bg-gradient-to-r from-purple-300 to-white shadow-md rounded-b-2xl">
+          {/* Nút xóa sản phẩm */}
           <button
             onClick={() => {
               setDeleteMode(!deleteMode);
               setSelected([]);
             }}
+            className="px-4 py-2 rounded-xl bg-red-500 text-white font-medium shadow hover:bg-red-600 hover:shadow-lg transition"
           >
+            <i className="fa fa-trash mr-2"></i>
             Xóa sản phẩm
           </button>
-          {deleteMode && (
-            <div>
-              
-              <motion.div
-                initial={{ y: -50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="fixed top-12 z-50 bg-gray-200 p-4 rounded-lg text-center font-medium shadow-lg w-fit mx-auto left-1/2 -translate-x-1/2"
-              >
-                <p className="p-2 text-red-600">
-                  Chọn các sản phẩm bạn muốn xóa
-                </p>
 
-                <div className="flex flex-row justify-center gap-4 p-2">
-                  <button
-                    onClick={() => {
-                      setDeleteMode(!deleteMode);
-                      setSelected([]);
-                    }}
-                    className="px-4 py-2 rounded-lg border border-gray-400 bg-white text-gray-700 hover:bg-gray-100 hover:shadow transition"
-                  >
-                    Quay lại
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      {
-                        if (selected.length == 0) {
-                          setErr("Bạn cần chọn ít nhất 1 sản phẩm")
-                          setTimeout(() => {
-                            setErr(null)
-                          }, 3000)
-                          return
+          {/* Nút danh mục sản phẩm */}
+          <button
+            onClick={() => {
+              setShowDM(!showDM);
+            }}
+            className="px-4 py-2 rounded-xl bg-blue-500 text-white font-medium shadow hover:bg-blue-600 hover:shadow-lg transition relative"
+          >
+            <i className="fa fa-list mr-2"></i>
+            Danh mục sản phẩm
+            {showDM && (
+              <div className="absolute z-50 top-full left-0 mt-2 bg-white w-56 rounded-xl shadow-xl text-gray-800 border border-gray-200">
+                <ul className="space-y-1 py-2">
+                  <li>
+                    <a
+                      onClick={() => {
+                        setQuanaonam(true);
+                        setQuanaonu(true);
+                        setDienmay(true);
+                        setTrangSuc(true);
                       }}
-                      setShowDelete(true);
-                      setDeleteMode(false);
-                    }}
-                    className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 hover:shadow transition"
-                  >
-                    Tiếp tục
-                  </button>
-                </div>
-                {err && (<><p>Bạn cần chọn ít nhất 1 sản phẩm</p></>)}
-              </motion.div>
-            </div>
-          )}
+                      className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"
+                    >
+                      <i className="fa fa-list text-blue-500"></i>
+                      Tất Cả Sản Phẩm
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => {
+                        setDienmay(false);
+                        setTrangSuc(true);
+                        setQuanaonam(false);
+                        setQuanaonu(false);
+                      }}
+                      className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg hover:bg-pink-100 hover:text-pink-700 transition"
+                    >
+                      <i className="fa fa-gem text-pink-500"></i>
+                      Trang Sức
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => {
+                        setTrangSuc(false);
+                        setDienmay(true);
+                        setQuanaonam(false);
+                        setQuanaonu(false);
+                      }}
+                      className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg hover:bg-purple-100 hover:text-purple-700 transition"
+                    >
+                      <i className="fa fa-tv text-purple-500"></i>
+                      Điện Tử
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => {
+                        setDienmay(false);
+                        setTrangSuc(false);
+                        setQuanaonam(true);
+                        setQuanaonu(false);
+                      }}
+                      className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg hover:bg-green-100 hover:text-green-700 transition"
+                    >
+                      <i className="fa fa-male text-green-500"></i>
+                      Quần áo nam
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={() => {
+                        setDienmay(false);
+                        setTrangSuc(false);
+                        setQuanaonam(false);
+                        setQuanaonu(true);
+                      }}
+                      className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg hover:bg-red-100 hover:text-red-700 transition"
+                    >
+                      <i className="fa fa-female text-red-500"></i>
+                      Quần áo nữ
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </button>
         </div>
+
         {showDelete && (
           <>
             {/* Lớp nền mờ */}
@@ -199,7 +328,6 @@ export default function Sanpham({ products, fetchProducts }) {
 
             {/* Modal */}
             <div className="fixed inset-0 flex items-center justify-center z-50">
-              
               <div className="bg-white p-8 space-y-6 flex flex-col rounded-2xl shadow-2xl w-[800px]">
                 {/* Tiêu đề */}
                 <h2 className="text-2xl font-bold text-center text-gray-800">
@@ -241,8 +369,11 @@ export default function Sanpham({ products, fetchProducts }) {
                   </button>
 
                   <button
-                    onClick={()=>{deleteProduct(selected)}}
-                    className="px-6 py-2 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 hover:shadow-lg transition">
+                    onClick={() => {
+                      deleteProduct(selected);
+                    }}
+                    className="px-6 py-2 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600 hover:shadow-lg transition"
+                  >
                     XÓA
                   </button>
                 </div>
@@ -257,7 +388,6 @@ export default function Sanpham({ products, fetchProducts }) {
 
             {/* Modal */}
             <div className="fixed inset-0 flex items-center justify-center z-50">
-              
               <div className="bg-white p-6 space-y-4 flex flex-col rounded-2xl shadow-2xl w-[800px]">
                 <h2 className="text-2xl font-bold text-gray-800 text-center mb-2">
                   Thêm sản phẩm mới
@@ -401,36 +531,163 @@ export default function Sanpham({ products, fetchProducts }) {
                   </div>
                 </div>
 
-                {/* Buttons */}
-                <div className="flex justify-end space-x-4 pt-4">
+                {/* them san pham */}
+                {edit == null && (
+                  <>
+                    <div className="flex justify-end space-x-4 pt-4">
+                      <button
+                        onClick={() => setShowAdd(false)}
+                        className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl shadow-md transition"
+                      >
+                        Đóng
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (
+                            !form.title ||
+                            !form.category ||
+                            !form.count ||
+                            !form.description ||
+                            !form.image ||
+                            !form.price ||
+                            !form.rate
+                          ) {
+                            setErr("Bạn cần nhập hết thông tin sản phẩm");
+                            setTimeout(() => {
+                              setErr(null);
+                            }, 3000);
+                            return;
+                          }
+                          handleAdd();
+                        }}
+                        className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl shadow-md transition"
+                      >
+                        Thêm sản phẩm
+                      </button>
+                    </div>
+                  </>
+                )}
+                {/* chinh sua san pham */}
+                {edit && (
+                  <>
+                    <div className="flex justify-end space-x-4 pt-4">
+                      <button
+                        onClick={() => {
+                          setShowAdd(false);
+                          setForm({
+                            title: "",
+                            price: null,
+                            description: "",
+                            image: "",
+                            rate: null,
+                            count: null,
+                            category: "",
+                          });
+                          setProd(edit)
+                          setEdit(null)
+                        }}
+                        className="font-semibold bg-gray-200 hover:bg-gray-300  px-5 py-2 rounded-xl shadow-md transition"
+                      >
+                        Quay Lại
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (
+                            !form.title ||
+                            !form.category ||
+                            !form.count ||
+                            !form.description ||
+                            !form.image ||
+                            !form.price ||
+                            !form.rate
+                          ) {
+                            setErr("Bạn cần nhập hết thông tin sản phẩm");
+                            setTimeout(() => {
+                              setErr(null);
+                            }, 3000);
+                            return;
+                          }
+                          handleSave(edit);
+                        }}
+                        className="font-semibold bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl shadow-md transition"
+                      >
+                        Lưu
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+        {prod && (
+          <>
+            <div className="fixed inset-0 bg-black opacity-40 z-40"></div>
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="max-w-6xl mx-auto mt-12 rounded-lg overflow-hidden shadow-2xl border border-gray-200 bg-white flex flex-col md:flex-row">
+                <div className="bg-gray-100 flex justify-center items-center p-4 md:min-w-[400px]">
+                  <img
+                    className="object-contain w-full max-w-[400px] h-auto rounded-md"
+                    src={prod.image}
+                    alt={prod.title}
+                  />
+                </div>
+
+                <div className="flex flex-col justify-between p-6 space-y-6 flex-1">
+                  <p className="text-3xl font-bold text-gray-800">
+                    {prod.title}
+                  </p>
+
+                  <div className="flex items-center space-x-4">
+                    <p className="px-2 py-1 text-sm rounded-sm border border-amber-400 bg-amber-100 flex items-center">
+                      {prod.rate}{" "}
+                      <i className="text-amber-500 fa-solid fa-star ml-1"></i>
+                    </p>
+                    <p className="text-gray-600">Đã bán {prod.count}</p>
+                  </div>
+
+                  <p className="text-gray-700 leading-relaxed">
+                    {prod.description}
+                  </p>
+
+                  <div className="bg-gray-100 p-4 rounded-md flex items-center space-x-3">
+                    <p className="text-xl font-semibold text-gray-800">
+                      Giá chỉ:
+                    </p>
+                    <p className="text-2xl font-bold text-red-600">
+                      {prod.price.toLocaleString("en-US")} VND
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-4">
+                    <button
+                      onClick={() => {
+                        deleteProduct([prod]);
+                        setProd(null);
+                      }}
+                      className="px-4 py-2 rounded-md bg-red-500 text-white font-medium shadow hover:bg-red-600 hover:shadow-lg transition"
+                    >
+                      <i className="fa fa-trash mr-2"></i>
+                      Xóa sản phẩm
+                    </button>
+                    <button
+                      onClick={() => {
+                        setForm(prod);
+                        setShowAdd(true);
+                        setEdit(prod);
+                        setProd(null);
+                      }}
+                      className="flex-1 min-w-[140px] bg-emerald-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-emerald-600 transition-colors duration-300"
+                    >
+                      Chỉnh sửa
+                    </button>
+                  </div>
+
                   <button
-                    onClick={() => setShowAdd(false)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl shadow-md transition"
+                    onClick={() => setProd(null)}
+                    className="self-end mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-md transition-colors duration-300"
                   >
-                    Đóng
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (
-                        !form.title ||
-                        !form.category ||
-                        !form.count ||
-                        !form.description ||
-                        !form.image ||
-                        !form.price ||
-                        !form.rate
-                      ) {
-                        setErr("Bạn cần nhập hết thông tin sản phẩm");
-                        setTimeout(() => {
-                          setErr(null);
-                        }, 3000);
-                        return;
-                      }
-                      handleAdd();
-                    }}
-                    className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl shadow-md transition"
-                  >
-                    Thêm sản phẩm
+                    Quay lại
                   </button>
                 </div>
               </div>
@@ -438,87 +695,9 @@ export default function Sanpham({ products, fetchProducts }) {
           </>
         )}
 
-        {/* <div className="w-full lg:w-[280px] border border-gray-200 bg-white shadow-md rounded-2xl p-4">
-          <h1 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
-            Danh mục sản phẩm
-          </h1>
-
-          <ul className="space-y-2">
-            <li>
-              <a
-                onClick={() => {
-                  setQuanaonam(true);
-                  setQuanaonu(true);
-                  setDienmay(true);
-                  setTrangSuc(true);
-                }}
-                className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"
-              >
-                <i className="fa fa-list text-blue-500" aria-hidden="true"></i>
-                Tất Cả Sản Phẩm
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={() => {
-                  setDienmay(false);
-                  setTrangSuc(true);
-                  setQuanaonam(false);
-                  setQuanaonu(false);
-                }}
-                className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"
-              >
-                <i className="fa fa-gem text-pink-500" aria-hidden="true"></i>
-                Trang Sức
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={() => {
-                  setTrangSuc(false);
-                  setDienmay(true);
-                  setQuanaonam(false);
-                  setQuanaonu(false);
-                }}
-                className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"
-              >
-                <i className="fa fa-tv text-purple-500" aria-hidden="true"></i>
-                Điện Tử
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={() => {
-                  setDienmay(false);
-                  setTrangSuc(false);
-                  setQuanaonam(true);
-                  setQuanaonu(false);
-                }}
-                className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"
-              >
-                <i className="fa fa-male text-green-500" aria-hidden="true"></i>
-                Quần áo nam
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={() => {
-                  setDienmay(false);
-                  setTrangSuc(false);
-                  setQuanaonam(false);
-                  setQuanaonu(true);
-                }}
-                className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition"
-              >
-                <i className="fa fa-female text-red-500" aria-hidden="true"></i>
-                Quần áo nữ
-              </a>
-            </li>
-          </ul>
-        </div> */}
-
         <div className="flex-1 flex flex-col lg:flex-row gap-6">
-          <ul className="flex-1 max-w-[1000px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          <ul className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            {/* them sản phẩm */}
             <div
               onClick={() => setShowAdd(true)}
               className="cursor-pointer h-[360px] duration-300 hover:shadow-xl hover:scale-105 border border-gray-200 rounded-2xl flex flex-col items-center justify-center gap-4 bg-white shadow-sm"
@@ -541,14 +720,19 @@ export default function Sanpham({ products, fetchProducts }) {
               }
 
               return (
-                <li key={product.id}>
+                <li
+                  onClick={() => {
+                    setProd(product);
+                  }}
+                  key={product.id}
+                >
                   <div className="cursor-pointer h-[360px] duration-300 hover:shadow-xl hover:scale-105 border border-gray-200 rounded-2xl flex flex-col bg-white shadow-sm relative">
                     {/* Checkbox custom */}
                     {deleteMode && (
                       <label className="absolute top-3 right-3">
                         <input
                           type="checkbox"
-                          checked={selected.some((p) => p.id  == product.id)}
+                          checked={selected.some((p) => p.id == product.id)}
                           onChange={() => toggleSelect(product)}
                           className="peer hidden"
                         />

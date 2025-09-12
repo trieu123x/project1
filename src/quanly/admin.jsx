@@ -19,21 +19,29 @@ export default function Admin({ items }) {
   }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex ">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-xl p-4">
-        <h1 className="text-2xl font-bold mb-6">Admin</h1>
+      <aside className="w-64 h-70 sticky top-0 mt-6 rounded-2xl bg-gradient-to-b from-purple-200 to-white shadow-2xl p-6 border-r border-gray-200">
+        {/* Tiêu đề */}
+        <h1 className="text-3xl font-extrabold mb-8 text-blue-600 tracking-wide">
+          Admin
+        </h1>
+
+        {/* Navigation */}
         <nav className="space-y-3">
           <button
             onClick={() => navigate("/admin")}
-            className="w-full text-left p-2 rounded hover:bg-gray-100"
+            className="w-full flex items-center gap-3 text-left p-3 rounded-xl font-medium text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition"
           >
+            <i className="fa fa-home text-blue-500"></i>
             Dashboard
           </button>
+
           <button
             onClick={() => navigate("/admin/sanpham")}
-            className="w-full text-left p-2 rounded hover:bg-gray-100"
+            className="w-full flex items-center gap-3 text-left p-3 rounded-xl font-medium text-gray-700 hover:bg-green-100 hover:text-green-700 transition"
           >
+            <i className="fa fa-box text-green-500"></i>
             Products
           </button>
         </nav>
