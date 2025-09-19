@@ -20,6 +20,7 @@ import Profile from "./thongtincanhan/trangchu";
 import Admin from "./quanly/admin";
 import Sanpham from "./quanly/sanpham";
 import Dashboard from "./quanly/dashboard";
+import Users from "./quanly/users";
 import { li } from "framer-motion/client";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [showMenuUser, setShowMenuUser] = useState(false);
   const [role, setRole] = useState();
+  const [users,setUsers] = useState([])
   //user
   useEffect(() => {
     const u = localStorage.getItem("userName");
@@ -74,8 +76,15 @@ function App() {
       })
       .catch((error) => console.error("Error fetching data:", error));
   };
+  const fetchUsers = async () => {
+    fetch(`https://68a1ffce6f8c17b8f5db45c7.mockapi.io/user`)
+      .then((res) => res.json())
+      .then((data) => setUsers(data))
+    .catch((error) => console.error("Error fetching data:", error));
+  }
   useEffect(() => {
     fetchProducts();
+    fetchUsers();
   }, []);
   // them sp vao gio hang
   const addProducts = (newProduct) => {
@@ -312,6 +321,7 @@ function App() {
               <Sanpham fetchProducts={fetchProducts} products={items}></Sanpham>
             }
           ></Route>
+          <Route path="users" element = {<Users users={users}></Users>}></Route>
         </Route>
       </Routes>
       {/* Gio hang */}

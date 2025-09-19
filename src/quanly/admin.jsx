@@ -44,6 +44,13 @@ export default function Admin({ items }) {
             <i className="fa fa-box text-green-500"></i>
             Products
           </button>
+          <button
+            onClick={() => navigate("/admin/users")}
+            className="w-full flex items-center gap-3 text-left p-3 rounded-xl font-medium text-gray-700 hover:bg-purple-100 hover:text-purple-700 transition"
+          >
+            <i class="fa fa-address-card text-purple-500" aria-hidden="true"></i>
+            Users
+          </button>
         </nav>
       </aside>
 

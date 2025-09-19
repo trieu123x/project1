@@ -28,7 +28,7 @@ export default function ProfilePage() {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(user),
+          body: JSON.stringify(updatedUser),
         }
       );
       const data = await res.json();
@@ -68,7 +68,6 @@ export default function ProfilePage() {
     }, 0);
     return sum;
   }, [lichSuMuaHang]);
-  console.log(totalPrice);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50  to-white flex p-6">
@@ -260,42 +259,48 @@ export default function ProfilePage() {
             )}
             {/* lich su mua hang */}
             {showLichSu && (
-              <div className="max-h-[600px] flex flex-col-reverse overflow-auto">
-                {lichSuMuaHang.map((product, index) => (
-                  <div
+              <div className="max-h-[600px] space-y-4 flex flex-col overflow-auto">
+                {lichSuMuaHang.slice().reverse().map((product, index) => (
+                  <li
                     key={index}
-                    className="flex items-center w-full p-4 mb-4 bg-white rounded-2xl shadow-md hover:shadow-lg transition"
+                    className="flex items-center w-full p-4 bg-gradient-to-r from-white to-blue-50 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300"
                   >
                     {/* Hình ảnh */}
-                    <img
-                      className="w-24 h-24 object-cover rounded-xl border"
-                      src={product.image}
-                      alt={product.title}
-                    />
+                    <div className="relative">
+                      <img
+                        className="w-24 h-24 object-cover rounded-xl border shadow-sm"
+                        src={product.image}
+                        alt={product.title}
+                      />
+                      {/* Badge số lượng */}
+                      {product.cnt > 1 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
+                          x{product.cnt}
+                        </span>
+                      )}
+                    </div>
 
                     {/* Thông tin */}
                     <div className="flex flex-col flex-1 ml-4">
-                      <p className="text-lg font-semibold text-gray-800">
+                      <p className="text-lg font-semibold text-gray-800 truncate">
                         {product.title}
                       </p>
-                      <p className="text-red-500 font-bold">
+                      <p className="text-red-600 font-bold text-lg mt-1">
                         {product.price.toLocaleString("en-US")} VND
                       </p>
 
-                      <div className="flex text-sm text-gray-500 space-x-6 mt-2">
-                        <p>
-                          Ngày mua:{" "}
-                          <span className="font-medium">{product.date}</span>
+                      <div className="flex items-center gap-6 text-sm text-gray-500 mt-3">
+                        <p className="flex items-center gap-1">
+                          <i className="fa fa-calendar text-blue-400"></i>
+                          <span>{product.date}</span>
                         </p>
-                        <p>
-                          Số lượng:{" "}
-                          <span className="font-medium">
-                            {product.cnt || 1}
-                          </span>
+                        <p className="flex items-center gap-1">
+                          <i className="fa fa-box text-green-400"></i>
+                          <span>Số lượng: {product.cnt || 1}</span>
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </li>
                 ))}
               </div>
             )}
