@@ -193,7 +193,7 @@ export default function Users({ users }) {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <div className="bg-gray-100 rounded-2xl shadow-lg p-6">
                     {/* Tiêu đề */}
                     <h1 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                       <i className="fa fa-shopping-bag text-blue-500"></i> Lịch
@@ -201,7 +201,7 @@ export default function Users({ users }) {
                     </h1>
 
                     {/* Danh sách sản phẩm */}
-                    <div className="flex flex-col overflow-auto max-h-[560px] pr-2">
+                    <div className="flex flex-col  overflow-auto max-h-[560px] pr-2">
                       <ul className="space-y-4">
                         {info.order.map((product, index) => (
                           <li

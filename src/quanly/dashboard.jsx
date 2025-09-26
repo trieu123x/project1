@@ -15,27 +15,64 @@ import {
   Link,
   useNavigate,
 } from "react-router-dom";
-const data = [
-  { month: "Jan", revenue: 4000 },
-  { month: "Feb", revenue: 3200 },
-  { month: "Mar", revenue: 5100 },
-  { month: "Apr", revenue: 4600 },
-  { month: "May", revenue: 6100 },
-  { month: "Jun", revenue: 7200 },
-];
+const data = [];
 
-export default function Dashboard({items}) {
+export default function Dashboard({ items, users }) {
   const navigate = useNavigate();
+  const totalPrice = useMemo(() => {
+    if (!users || users.length === 0) return 0;
+    return users.reduce((sum, user) => {
+      const sp = user.spend || 0;
+      sum += sp;
+      return sum;
+    }, 0);
+  }, [users]);
+
+  const totalOrder = useMemo(() => {
+    if (!users || users.length === 0) return 0;
+    return users.reduce((sum, user) => {
+      const order = user.order.length || 0;
+      sum += order;
+      return sum;
+    }, 0);
+  }, [users]);
   const role = localStorage.getItem("role");
-  const [users, setUsers] = useState();
   if (role != "admin") {
     navigate("/");
   }
 
+  const chartData = useMemo(() => {
+  if (!users) return [];
 
-  return (<>
-   
+  const monthlyRevenue = {};
 
+  users.forEach(user => {
+    user.order?.forEach(order => {
+      let key = "Unknown";
+
+      if (order.date) {
+        // "01:43:12 26/9/2025"
+        const [time, dmy] = order.date.split(" "); // ["01:43:12", "26/9/2025"]
+        const [day, month, year] = dmy.split("/"); // ["26", "9", "2025"]
+
+        // Tạo key "09-2025"
+        key = `${month.padStart(2, "0")}-${year}`;
+      }
+
+      const amount = (order.price || 0) * (order.cnt || 1);
+      monthlyRevenue[key] = (monthlyRevenue[key] || 0) + amount;
+    });
+  });
+
+  return Object.keys(monthlyRevenue).map(key => ({
+    month: key,
+    revenue: monthlyRevenue[key],
+  }));
+}, [users]);
+
+
+  return (
+    <>
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-y-auto">
         <h2 className="text-xl font-semibold mb-6">Dashboard Overview</h2>
@@ -46,7 +83,9 @@ export default function Dashboard({items}) {
             <DollarSign className="text-green-500 w-8 h-8" />
             <div className="ml-4">
               <p className="text-sm text-gray-500">Doanh thu</p>
-              <p className="text-lg font-bold">72.000.000₫</p>
+              <p className="text-lg font-bold">
+                {totalPrice.toLocaleString("en-US")} VND
+              </p>
             </div>
           </div>
 
@@ -54,15 +93,15 @@ export default function Dashboard({items}) {
             <ShoppingCart className="text-blue-500 w-8 h-8" />
             <div className="ml-4">
               <p className="text-sm text-gray-500">Đơn hàng</p>
-              <p className="text-lg font-bold">1,230</p>
+              <p className="text-lg font-bold">{totalOrder}</p>
             </div>
           </div>
 
           <div className="bg-white shadow-md p-4 rounded-xl flex items-center">
             <Users className="text-purple-500 w-8 h-8" />
             <div className="ml-4">
-              <p className="text-sm text-gray-500">Khách hàng mới</p>
-              <p className="text-lg font-bold">320</p>
+              <p className="text-sm text-gray-500">Khách hàng</p>
+              <p className="text-lg font-bold">{users.length - 1}</p>
             </div>
           </div>
 
@@ -70,7 +109,7 @@ export default function Dashboard({items}) {
             <Package className="text-orange-500 w-8 h-8" />
             <div className="ml-4">
               <p className="text-sm text-gray-500">Sản phẩm</p>
-              <p className="text-lg font-bold">540</p>
+              <p className="text-lg font-bold">{items.length}</p>
             </div>
           </div>
         </div>
@@ -79,7 +118,7 @@ export default function Dashboard({items}) {
         <div className="bg-white shadow-md p-4 rounded-xl mb-6">
           <h3 className="text-lg font-semibold mb-4">Doanh thu theo tháng</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data}>
+            <BarChart data={chartData}>
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
@@ -122,8 +161,7 @@ export default function Dashboard({items}) {
             </tbody>
           </table>
         </div>
-          </main>
-          
-</>
+      </main>
+    </>
   );
 }

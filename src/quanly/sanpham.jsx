@@ -1,9 +1,7 @@
-
 import React, { use, useEffect, useState, useMemo } from "react";
 import { Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { ArrowDownAZ, ArrowUpAZ } from "lucide-react";
-
 
 export default function Sanpham({ products, fetchProducts }) {
   const [quanaonam, setQuanaonam] = useState(true);
@@ -32,7 +30,9 @@ export default function Sanpham({ products, fetchProducts }) {
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [sortOrder, setSortOrder] = useState("asc"); // asc = tăng dần, desc = giảm dần
 
-  useEffect(()=>{setFilteredProducts(products)},[products])
+  useEffect(() => {
+    setFilteredProducts(products);
+  }, [products]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -153,11 +153,11 @@ export default function Sanpham({ products, fetchProducts }) {
   const handleSort = () => {
     const sorted = [...filteredProducts].sort((a, b) => {
       if (sortOrder == "asc") return a.price - b.price;
-      else return b.price - a.price
-    })
-    setFilteredProducts(sorted)
-    setSortOrder(sortOrder == "asc"? "desc" : "asc")
-  }
+      else return b.price - a.price;
+    });
+    setFilteredProducts(sorted);
+    setSortOrder(sortOrder == "asc" ? "desc" : "asc");
+  };
   return (
     <>
       {err && (
@@ -327,41 +327,38 @@ export default function Sanpham({ products, fetchProducts }) {
             )}
           </button>
           <div className="relative flex-1 max-w-md">
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                size={20}
-              />
-              <input
-                type="text"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                placeholder="Tìm kiếm ..."
-                className="w-full pl-10 pr-4 py-2 rounded-lg focus:ring-2 focus:ring-white focus:outline-none bg-white/90 shadow-sm"
-              />
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={20}
+            />
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="Tìm kiếm ..."
+              className="w-full pl-10 pr-4 py-2 rounded-lg focus:ring-2 focus:ring-white focus:outline-none bg-white/90 shadow-sm"
+            />
           </div>
           <button
-              onClick={handleSearch}
-              className="bg-white text-indigo-600 font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-gray-100 transition"
-            >
-              Tìm
+            onClick={handleSearch}
+            className="bg-white text-indigo-600 font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-gray-100 transition"
+          >
+            Tìm
           </button>
           <button
-  onClick={handleSort}
-  className="flex items-center gap-2 bg-gradient-to-r from-purple-400 to-violet-200 text-white font-semibold px-5 py-2 rounded-xl shadow-md hover:from-purple-200 hover:to-violet-400 transition duration-300"
->
-  {sortOrder === "asc" ? (
-    <>
-      <ArrowUpAZ size={18} /> Giá tăng dần
-    </>
-  ) : (
-    <>
-      <ArrowDownAZ size={18} /> Giá giảm dần
-    </>
-  )}
-</button>
-
-
-          
+            onClick={handleSort}
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-400 to-violet-200 text-white font-semibold px-5 py-2 rounded-xl shadow-md hover:from-purple-200 hover:to-violet-400 transition duration-300"
+          >
+            {sortOrder === "asc" ? (
+              <>
+                <ArrowUpAZ size={18} /> Giá tăng dần
+              </>
+            ) : (
+              <>
+                <ArrowDownAZ size={18} /> Giá giảm dần
+              </>
+            )}
+          </button>
         </div>
 
         {showDelete && (
@@ -626,8 +623,8 @@ export default function Sanpham({ products, fetchProducts }) {
                             count: null,
                             category: "",
                           });
-                          setProd(edit)
-                          setEdit(null)
+                          setProd(edit);
+                          setEdit(null);
                         }}
                         className="font-semibold bg-gray-200 hover:bg-gray-300  px-5 py-2 rounded-xl shadow-md transition"
                       >
@@ -765,6 +762,7 @@ export default function Sanpham({ products, fetchProducts }) {
               return (
                 <li
                   onClick={() => {
+                    if (deleteMode) return;
                     setProd(product);
                   }}
                   key={product.id}

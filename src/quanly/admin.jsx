@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 
-export default function Admin({ items }) {
+export default function Admin({ items,users }) {
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
-  const [users, setUsers] = useState([]);
+
 
   useEffect(() => {
     if (role !== "admin") {
@@ -12,11 +12,6 @@ export default function Admin({ items }) {
     }
   }, [role, navigate]);
 
-  useEffect(() => {
-    fetch(`https://68a1ffce6f8c17b8f5db45c7.mockapi.io/user`)
-      .then((res) => res.json())
-      .then((data) => setUsers(data));
-  }, []);
 
   return (
     <div className="flex ">

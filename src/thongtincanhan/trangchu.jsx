@@ -39,7 +39,27 @@ export default function ProfilePage() {
       setTimeout(() => setErr(false), 3000);
     }
   };
+  const handleSpend = async () => {
+    try {
+      const updatedUser = { ...user, spend: totalPrice }; // thêm trường spend
+    setUser(updatedUser);
 
+    const res = await fetch(
+      `https://68a1ffce6f8c17b8f5db45c7.mockapi.io/user/${userId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedUser),
+      }
+      );
+    } catch (loi) {
+      console.log(loi)
+    }
+  }
+
+  useEffect(() => {
+    handleSpend()
+  },[lichSuMuaHang])
   const handleClear = () => {
     setForm({
       avt: "",
@@ -49,7 +69,6 @@ export default function ProfilePage() {
     });
   };
   useEffect(() => {
-    console.log(userId);
     if (userId) {
       fetch(`https://68a1ffce6f8c17b8f5db45c7.mockapi.io/user/${userId}`)
         .then((res) => res.json())

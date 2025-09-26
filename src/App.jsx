@@ -9,6 +9,7 @@ import {
   Link,
   useNavigate,
 } from "react-router-dom";
+import LandingPage from "./landing";
 import Thanhtoan from "./Thanhtoan";
 import Thetindung from "./PTThanhtoan/Thetindung";
 import PayPal from "./PTThanhtoan/Paypal";
@@ -37,7 +38,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [showMenuUser, setShowMenuUser] = useState(false);
   const [role, setRole] = useState();
-  const [users,setUsers] = useState([])
+  const [users, setUsers] = useState([])
+   const [showMenu, setShowMenu] = useState(false);
   //user
   useEffect(() => {
     const u = localStorage.getItem("userName");
@@ -66,8 +68,10 @@ function App() {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
       setProducts(JSON.parse(storedCart));
+    } else {
+      setProducts([])
     }
-  }, []);
+  }, [localStorage.getItem("cart")]);
   const fetchProducts = async () => {
     fetch("https://68a1ffce6f8c17b8f5db45c7.mockapi.io/product")
       .then((response) => response.json())
@@ -139,116 +143,138 @@ function App() {
   return (
     <>
       {/* navbar */}
-      <nav className="bg-emerald-500  shadow-md">
-        <div className="max-w-7xl mx-auto px-6 h-[64px] flex items-center justify-between">
-          <h1
+      <nav className="bg-emerald-500 shadow-md">
+      <div className="max-w-7xl mx-auto px-6 h-[64px] flex items-center justify-between">
+        {/* Logo */}
+        <h1
+          onClick={() => {
+            localStorage.removeItem("product");
+            navigate("/");
+          }}
+          className="cursor-pointer text-2xl font-bold text-white flex items-center gap-2 hover:opacity-90 transition-opacity"
+        >
+          <i className="fa fa-shopping-basket"></i>
+          Super Store
+        </h1>
+
+        {/* Nút toggle cho mobile */}
+        <button
+          className="text-white text-2xl md:hidden"
+          onClick={() => setShowMenu(!showMenu)}
+        >
+          <i className="fa fa-bars"></i>
+        </button>
+
+        {/* Menu chính */}
+        <div
+          className={`flex-col z-999 md:flex md:flex-row md:items-center md:gap-8 absolute md:static top-[64px] left-0 w-full md:w-auto bg-emerald-500 md:bg-transparent transition-all duration-300 ease-in-out ${
+            showMenu ? "flex" : "hidden"
+          }`}
+        >
+          {/* Products */}
+          <button
             onClick={() => {
               localStorage.removeItem("product");
-              navigate("/");
+              navigate("/products");
+              setShowMenu(false);
             }}
-            className="cursor-pointer text-2xl font-bold text-white flex items-center gap-2 hover:opacity-90 transition-opacity"
+            className="px-4 py-2 cursor-pointer relative text-white font-medium transition-colors flex items-center gap-1 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-yellow-200 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
           >
-            <i className="fa fa-shopping-basket"></i>
-            Super Store
-          </h1>
+            <i className="fa fa-shopping-bag"></i>
+            <span>Products</span>
+          </button>
 
-          <div className="flex items-center gap-8">
-            <button
-              onClick={() => {
-                localStorage.removeItem("product");
-                navigate("/");
-              }}
-              className="cursor-pointer relative text-white  font-medium transition-colors flex items-center gap-1
-             after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-yellow-200
-             after:w-0 after:transition-all after:duration-300 hover:after:w-full"
-            >
-              <i className="fa fa-shopping-bag"></i>
-              <span className="hidden sm:inline">Products</span>
-            </button>
-            <button
-              onClick={() => {
-                setCartCount(0);
-                setShowGiohang(!showGiohang);
-              }}
-              className="cursor-pointer relative text-white  font-medium transition-colors flex items-center gap-1
-             after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-yellow-200
-             after:w-0 after:transition-all after:duration-300 hover:after:w-full"
-            >
-              <i
-                className={`fa fa-shopping-cart ${
-                  animateCart ? "animate-bounce" : ""
-                }`}
-              ></i>
-              <span className="hidden sm:inline">Giỏ hàng</span>
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+          {/* Giỏ hàng */}
+          <button
+            onClick={() => {
+              setCartCount(0);
+              setShowGiohang(!showGiohang);
+              setShowMenu(false);
+            }}
+            className="px-4 py-2 cursor-pointer relative text-white font-medium transition-colors flex items-center gap-1 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-yellow-200 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
+          >
+            <i
+              className={`fa fa-shopping-cart ${
+                animateCart ? "animate-bounce" : ""
+              }`}
+            ></i>
+            <span>Giỏ hàng</span>
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </button>
 
-            <div className="relative ">
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                type="text"
-                placeholder="Tìm sản phẩm..."
-                className="focus:outline-none focus:ring-2 focus:ring-yellow-300 border border-gray-300 rounded-full px-4 py-1.5 pr-10 w-64 shadow-sm"
-              />
-              <i className="fa fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+          {/* Search */}
+          <div className="relative px-4 py-2 md:py-0">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              type="text"
+              placeholder="Tìm sản phẩm..."
+              className="focus:outline-none focus:ring-2 focus:ring-yellow-300 border border-gray-300 rounded-full px-4 py-1.5 pr-10 w-full md:w-64 shadow-sm"
+            />
+            <i className="fa fa-search absolute right-6 top-1/2 -translate-y-1/2 text-gray-500"></i>
 
-              {filteredProducts.length > 0 && (
-                <div className="absolute top-full left-0 w-[400px] bg-white border border-gray-300 rounded-md mt-2 z-50 max-h-60 overflow-y-auto shadow-lg">
-                  {filteredProducts.map((p) => (
-                    <div
-                      key={p.id}
-                      onClick={() => {
-                        navigate(`/product/${p.id}`);
-                        setSearch("");
-                        setFilteredProducts([]);
-                      }}
-                      className="flex items-center gap-4 p-2 hover:bg-gray-100 cursor-pointer transition-colors"
-                    >
-                      <img
-                        className="w-[60px] h-[60px] object-contain rounded"
-                        src={p.image}
-                        alt={p.title}
-                      />
-                      <p className="text-sm text-gray-700">{p.title}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {filteredProducts.length === 0 && search.trim() !== "" && (
-                <div className="absolute top-full left-0 w-[400px] bg-white border border-gray-300 rounded-md mt-2 z-50 p-2 shadow-lg">
-                  <p className="text-gray-500">Không có kết quả phù hợp</p>
-                </div>
-              )}
-            </div>
+            {filteredProducts.length > 0 && (
+              <div className="absolute top-full left-0 w-full md:w-[400px] bg-white border border-gray-300 rounded-md mt-2 z-50 max-h-60 overflow-y-auto shadow-lg">
+                {filteredProducts.map((p) => (
+                  <div
+                    key={p.id}
+                    onClick={() => {
+                      navigate(`/product/${p.id}`);
+                      setSearch("");
+                      setFilteredProducts([]);
+                      setShowMenu(false);
+                    }}
+                    className="flex items-center gap-4 p-2 hover:bg-gray-100 cursor-pointer transition-colors"
+                  >
+                    <img
+                      className="w-[60px] h-[60px] object-contain rounded"
+                      src={p.image}
+                      alt={p.title}
+                    />
+                    <p className="text-sm text-gray-700">{p.title}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {filteredProducts.length === 0 && search.trim() !== "" && (
+              <div className="absolute top-full left-0 w-full md:w-[400px] bg-white border border-gray-300 rounded-md mt-2 z-50 p-2 shadow-lg">
+                <p className="text-gray-500">Không có kết quả phù hợp</p>
+              </div>
+            )}
           </div>
+
+          {/* Auth */}
           {!user && (
-            <div>
+            <div className="flex flex-col md:flex-row px-4 py-2 md:py-0">
               <button
-                onClick={() => navigate("/dangki")}
-                className="bg-white text-emerald-600 px-4 py-2 rounded-full font-semibold shadow hover:bg-gray-100 transition-colors mr-2"
+                onClick={() => {
+                  navigate("/dangki");
+                  setShowMenu(false);
+                }}
+                className="bg-white text-emerald-600 px-4 py-2 rounded-full font-semibold shadow hover:bg-gray-100 transition-colors mb-2 md:mb-0 md:mr-2"
               >
                 Đăng ký
               </button>
-
               <button
-                onClick={() => navigate("/dangnhap")}
+                onClick={() => {
+                  navigate("/dangnhap");
+                  setShowMenu(false);
+                }}
                 className="bg-yellow-400 text-white px-4 py-2 rounded-full font-semibold shadow hover:bg-yellow-500 transition-colors"
               >
                 Đăng nhập
               </button>
             </div>
           )}
+
           {user && (
             <div
               onClick={() => setShowMenuUser(!showMenuUser)}
-              className="cursor-pointer flex-col relative text-white font-medium transition-colors flex items-center gap-1
-             after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-yellow-200
-             after:w-0 after:transition-all after:duration-300 hover:after:w-full"
+              className="relative px-4 py-2 cursor-pointer select-none text-white font-medium transition-colors flex items-center gap-1 after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:bg-yellow-200 after:w-0 after:transition-all after:duration-300 hover:after:w-full"
             >
               <p className="text-white font-medium">
                 <i className="fas fa-user text-white"></i> {user}
@@ -257,20 +283,25 @@ function App() {
               {showMenuUser && (
                 <div className="absolute top-full mt-2 bg-white w-48 rounded-lg shadow-lg text-gray-800">
                   <ul className="flex m-2 flex-col">
-                    {role == "admin" && (
-                      <li onClick={()=> navigate("/admin")}
-                        className="px-4 rounded-md ease-in transition duration-300 py-2 bg-green-300 hover:bg-green-100 cursor-pointer">
+                    {role === "admin" && (
+                      <li
+                        onClick={() => {
+                          navigate("/admin");
+                          setShowMenu(false);
+                        }}
+                        className="px-4 rounded-md ease-in transition duration-300 py-2 bg-green-300 hover:bg-green-100 cursor-pointer"
+                      >
                         Dashboard
                       </li>
                     )}
                     <li
-                      onClick={() => navigate("/thongtincanhan/thongtin")}
+                      onClick={() => {
+                        navigate("/thongtincanhan/thongtin");
+                        setShowMenu(false);
+                      }}
                       className=" rounded-lg px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     >
                       Thông tin cá nhân
-                    </li>
-                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                      Lịch sử mua hàng
                     </li>
                     
                     <li
@@ -291,10 +322,12 @@ function App() {
             </div>
           )}
         </div>
-      </nav>
+      </div>
+    </nav>
       {/* Routes */}
       <Routes>
-        <Route path="/" element={<Danhmucsp products={items} />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/products" element={<Danhmucsp products={items} />} />
         <Route
           path="/product/:id"
           element={<Product products={products} onAddProduct={addProducts} />}
@@ -313,8 +346,8 @@ function App() {
           path="/thongtincanhan/thongtin"
           element={<Profile></Profile>}
         ></Route>
-        <Route path="/admin" element={<Admin items={items}></Admin>}>
-          <Route index element={<Dashboard />}></Route>
+        <Route path="/admin" element={<Admin items={items} users={users}></Admin>}>
+          <Route index element={<Dashboard  items={items} users={users} />}></Route>
           <Route
             path="sanpham"
             element={
