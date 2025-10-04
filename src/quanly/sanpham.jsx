@@ -662,8 +662,8 @@ export default function Sanpham({ products, fetchProducts }) {
         )}
         {prod && (
           <>
-            <div className="fixed inset-0 bg-black opacity-40 z-40"></div>
-            <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black opacity-40 z-999"></div>
+            <div className="fixed inset-0 flex items-center justify-center z-9999">
               <div className="max-w-6xl mx-auto mt-12 rounded-lg overflow-hidden shadow-2xl border border-gray-200 bg-white flex flex-col md:flex-row">
                 <div className="bg-gray-100 flex justify-center items-center p-4 md:min-w-[400px]">
                   <img

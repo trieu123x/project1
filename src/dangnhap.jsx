@@ -31,7 +31,7 @@ export default function Dangnhap() {
         localStorage.setItem("token", token);
         localStorage.setItem("userName", user.name);
         localStorage.setItem("userId", user.id);
-        localStorage.setItem("role", user.role);
+        localStorage.setItem("role", user.role);    
         if (user.role = "admin") navigate("/admin")
         else navigate("/");
         return;

@@ -3,7 +3,6 @@
 
 export async function handleBuy(product) {
     const userId = localStorage.getItem("userId")
-    alert("mua hang thanh cong")
     const res = await fetch(`https://68a1ffce6f8c17b8f5db45c7.mockapi.io/user/${userId}`)
     const user = await res.json();
     const newOrder = {

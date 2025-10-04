@@ -17,8 +17,12 @@ import {
 } from "react-router-dom";
 const data = [];
 
-export default function Dashboard({ items, users }) {
+export default function Dashboard({ items, users,fetchProducts,fetchUsers}) {
   const navigate = useNavigate();
+  useEffect(() => {
+    fetchProducts()
+    fetchUsers()
+  },[])
   const totalPrice = useMemo(() => {
     if (!users || users.length === 0) return 0;
     return users.reduce((sum, user) => {

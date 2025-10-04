@@ -32,9 +32,9 @@ export default function Dangki() {
       try {
           const r = await fetch("https://68a1ffce6f8c17b8f5db45c7.mockapi.io/user")
           const user = await r.json()
-          const isDup = user.some((u) => u.username == form.username || u.name == form.name || u.email == u.email)
+          const isDup = user.some((u) =>  u.name == form.name || u.email == form.email)
           if (isDup) {
-              setErr("Tên đăng nhập hoặc tên người dùng hoặc email đã tồn tại")
+              setErr("Tên đăng nhập hoặc email đã tồn tại")
               setTimeout(() => {
                   setErr(false)
               }, 3000)

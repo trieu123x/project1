@@ -44,6 +44,7 @@ function Danhmucsp({ products }) {
     }
   }, []);
 
+
   // random sp
   useEffect(() => {
     if (products.length > 0) {
@@ -53,6 +54,7 @@ function Danhmucsp({ products }) {
       }, 5000);
       return () => clearInterval(interval);
     }
+
   }, [products]);
 
   const handleSortDown = () => {
@@ -258,7 +260,7 @@ function Danhmucsp({ products }) {
                     {products[random].title}
                   </p>
                   <p className="font-bold text-red-600 text-lg">
-                    {products[random].price} VND
+                    {products[random].price.toLocaleString("en-US")} VND
                   </p>
                   <div className="mt-auto flex items-center space-x-2">
                     <p className="px-2 py-0.5 text-sm rounded-md border border-amber-400 bg-amber-100">

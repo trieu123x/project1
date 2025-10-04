@@ -111,10 +111,10 @@ export default function Users({ users }) {
         {info && (
           <>
             {/* Overlay */}
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"></div>
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-9999"></div>
 
             {/* Modal */}
-            <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="fixed inset-0 flex items-center justify-center z-99999">
               <div className="bg-gradient-to-br from-white to-slate-50 p-8 rounded-3xl shadow-2xl ">
                 {/* Avatar */}
                 <div className="flex flex-row space-x-4">
